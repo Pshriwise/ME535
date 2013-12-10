@@ -1,11 +1,10 @@
 #!/bin/sh
 
-## Config:
 starturl="https://drive.google.com/folderview?id=<insert-id-here>&usp=sharing"
 basefolder="/full/path/to/destination"
-# Change following to false when you don't want to delete files when they are missing from google drive.
 removefiles=true 
-## End config:
+
+## End config
 
 download () {
 	url=$1
