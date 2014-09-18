@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     << 5 << 0 << 0 << endr;
 
   P = P.t();
-  std::cout << P.col(0) << std::endl;
+
 
   std::vector<Mat<double> > plot_data;
 
@@ -70,16 +70,59 @@ int main(int argc, char** argv)
       
     }
   
+  //make sure the plot_data is cleared 
+  plot_data.clear();
+  
   data_file.close();
+
+
+  //use the algorithm to get the specific points of u we want and send the plotting data out to a new file
+
+  double u_vals[3] = { 0.2, 0.5, 0.8 };
+
+  for( unsigned int i = 0; i < 3 ; i++)
+    {
+
+      //run the de_cast algorithm for this u value
+      de_cast( u_vals[i], P, pnt, plot_data);
+
+     //use the plot data to write to a new output file
+
+      std::ostringstream filename;
+      filename << "Problem4_u=" << u_vals[i] << ".dat";
+
+      filenames.push_back( filename.str() );
+      data_file.open( &(filename.str()[0]) );
+
+      // for each matrix, plot the points
+      for(std::vector<Mat<double> >::iterator j = plot_data.begin();
+	  j != plot_data.end(); j++)
+	{
+
+	  Mat<double> this_mat = *j;
+	  for( unsigned int k =0; k < this_mat.n_cols; k++)
+	    data_file << this_mat(0,k) << "\t" << this_mat(1,k)
+		      << "\t" << this_mat(2,k) << "\n";
+
+	  data_file << "\n";
+	}
+
+      //make sure the plot_data is cleared 
+      plot_data.clear();
+  
+      data_file.close();
+    }
+
+
 
   return 0;
 }
-
 
 // plot data will contain all information if the user wants to plot
 // the progression of the algorithm
 void de_cast( double u, Mat<double> CP, Mat<double> &pnt, std::vector<Mat<double > > &plot_data )
 {
+
   assert(3 == CP.n_rows);
 
   //add this matrix to the plot_data
