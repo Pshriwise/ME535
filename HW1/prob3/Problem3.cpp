@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 		      1,        2,        0,
 		      3,        5,        0,
 		      4,        4,        0,
-                      5,        5,        0 };
+                      5,        0,        0 };
   
       Mat<double> P(p,3,5,false);
       P=P.t(); // have to do this because of the way that armadillo reads values into matrices
@@ -48,6 +48,9 @@ int main(int argc, char** argv)
       std::cout << "B Matrix:" << std::endl;
       std::cout << B << std::endl;
       
+
+      //// PART C \\\
+
       //setup the parameter sweep along u
       Mat<double> T;
       T.set_size(5,u_pnts);
@@ -90,7 +93,32 @@ int main(int argc, char** argv)
 
       std::cout << "--------------------------------------" << std::endl;
       
+      //// PART B \\\\
+
+      //write out the x,y,z values for u=0.2,0.5,0.8
+      double u[3] = {0.2, 0.5, 0.8};
+
+      Mat<double> U;
+      U.set_size(5,3);
+      for( unsigned int i = 0; i < 3; i++)
+	{
+	  U(0,i) = pow(u[i],4);
+	  U(1,i) = pow(u[i],3);
+	  U(2,i) = pow(u[i],2);
+	  U(3,i) = u[i];
+	  U(4,i) = 1;
+
+	}
+
+      //reset the data points
+      Q= U.t()*B*P;
+
+      Q=Q.t();
       
+      std::cout << std::endl;
+
+      for( unsigned int i = 0; i < Q.n_cols; i++)
+	std::cout << "When u=" << u[i] << " the curve point is (" << Q(0,i) << ", " << Q(1,i) << ", " << Q(2,i) << ")" << std::endl;
 
 
   create_gnuplot_script( filenames );
