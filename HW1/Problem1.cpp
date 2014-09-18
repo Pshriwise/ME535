@@ -25,10 +25,10 @@ int main(int argc, char** argv)
   Mat<double> P(p,3,4,false);
   std::cout << P.t() << std::endl;
 
-  double b[16]   = { 2, -2,  1, 1,
-		    -3,  3, -2, 1,
-		     0,  0,  1, 0,
-		     1,  0,  0, 0};
+  double b[16]   = { 2, -2,  1,  1,
+		    -3,  3, -2, -1,
+		     0,  0,  1,  0,
+		     1,  0,  0,  0};
 
   Mat<double> B(b,4,4,false);
   std::cout << B.t() << std::endl;
