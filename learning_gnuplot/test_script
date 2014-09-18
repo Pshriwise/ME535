@@ -1,0 +1,11 @@
+#First gnuplot script
+#Uses file called exp.dat 
+plot 'exp.dat' u 1:2:(sqrt($2)) w yerr
+set ylabel 'Counts'
+set yrange[-600:1200]
+set title 'Example Plot'
+replot
+pause -1
+set xlabel 'Time (ms)'
+replot
+pause -1
