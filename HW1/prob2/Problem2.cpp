@@ -73,7 +73,7 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   
   std::ofstream gp_script;
   
-  gp_script.open("Problem1_gp.p");
+  gp_script.open("Problem2_gp.p");
 
   gp_script << "#Name: Patrick Shriwise \t Date: 9/22/14 \n" ;
   gp_script << "#This is a gnuplot file for ploting data for Problem 2 in HW 1 \n";
@@ -96,7 +96,7 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "set title 'HW1_Problem2' \n";
   gp_script << "set mytics '4' \n";
   gp_script << "set mxtics '4' \n";
-  
+  gp_script << "set nokey \n";
   //no more settings after here
   gp_script << "replot \n";
   gp_script << "\n"; gp_script << "pause -1";
