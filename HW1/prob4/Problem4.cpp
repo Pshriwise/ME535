@@ -9,7 +9,7 @@
 using namespace arma;
 
 
-void de_cast( double u, Mat<double> CP, Mat<double> &pnt );
+void de_cast( double u, Mat<double> CP, Mat<double> &pnt, std::vector<Mat<double > > &plot_data );
 
 int main(int argc, char** argv)
 {
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   std::vector<Mat<double> > plot_data;
 
   Mat<double> pnt(3,1);
-  de_cast( u, P, pnt );
+  de_cast( u, P, pnt, plot_data );
 
   std::cout << pnt << std::endl;
 
@@ -38,12 +38,16 @@ int main(int argc, char** argv)
 }
 
 
-
-void de_cast( double u, Mat<double> CP, Mat<double> &pnt)
+// plot data will contain all information if the user wants to plot
+// the progression of the algorithm
+void de_cast( double u, Mat<double> CP, Mat<double> &pnt, std::vector<Mat<double > > &plot_data )
 {
-
   assert(3 == CP.n_rows);
 
+  //add this matrix to the plot_data
+  plot_data.push_back( CP );
+
+  // if we only have one point, we're done, return the point as a matrix
   if( CP.n_cols == 1) 
     {
 
@@ -51,6 +55,7 @@ void de_cast( double u, Mat<double> CP, Mat<double> &pnt)
       return;
 
     }
+  // otherwise calculate the points and then recurse on the new matrix
   else
     {
       //create a new matrix for storing the values
@@ -80,7 +85,7 @@ void de_cast( double u, Mat<double> CP, Mat<double> &pnt)
 	  
 	}
       
-      de_cast( u, N, pnt );
+      de_cast( u, N, pnt, plot_data );
 
     }
 
