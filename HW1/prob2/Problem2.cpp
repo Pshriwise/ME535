@@ -93,7 +93,7 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "set xlabel 'x' \n";
   gp_script << "set ylabel 'y' \n";
   gp_script << "set zlabel 'z' \n";
-  gp_script << "set title 'HW1_Problem2' \n";
+  gp_script << "set title 'HW1_Problem2 Hermite Curve' \n";
   gp_script << "set mytics '4' \n";
   gp_script << "set mxtics '4' \n";
   gp_script << "set nokey \n";
