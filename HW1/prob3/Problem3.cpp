@@ -15,57 +15,56 @@ int main(int argc, char** argv)
 
   int u_pnts= 20;
 
-  std::vector<double> ks(4);
-  ks[0] = 0.5; ks[1] = 1; ks[2] =  1.5; ks[3]= 2;
 
   std::vector<std::string> filenames;
-  for( std::vector<double>::iterator i = ks.begin(); i!=ks.end(); i++)
-    {
-      double k = *i;
-      std::cout << "--------------------------------------" << std::endl;
-      std::cout << "k = " << k << std::endl << std::endl;;
 
-      //create the point and vector arrays using the form 
-      //[x0, x1, dx0, dx1; y0 y1l dy0, dy1; z0, z1, dz0, dz1]
+      std::cout << "--------------------------------------" << std::endl;
+
+
+      //create the point array (5 points)
+      
       
       // setup the point matrix
-      double p[12]= { 4,        4,        0,
-		      24,       4,        0,
-		      0.8320*k, 0.5547*k, 0,
-		      0.8320,   -0.5547,  0};
+      double p[15]= { 0,        0,        0,
+		      1,        2,        0,
+		      3,        5,        0,
+		      4,        4,        0,
+                      5,        5,        0 };
   
-      Mat<double> P(p,3,4,false);
-      P=P.t();
+      Mat<double> P(p,3,5,false);
+      P=P.t(); // have to do this because of the way that armadillo reads values into matrices
       std::cout << "P Matrix:" << std::endl;
       std::cout << P << std::endl;
       
       // now setup the coefficients for the basis matrix
-      double b[16]   =  { 2, -2,  1,  1,
-			 -3,  3, -2, -1,
-			 0,  0,  1,  0,
-			 1,  0,  0,  0};
+      double b[25]   =  {    1,  -4,   6,  -4, 1,
+			    -4,  12, -12,   4, 0, 
+			     6, -12,   6,   0, 0,
+			    -4,   4,   0,   0, 0, 
+			     1,   0,   0,   0, 0 };
       
-      Mat<double> B(b,4,4,false);
-      B=B.t();
+      Mat<double> B(b,5,5,false);
+      B=B.t(); // have to do this because of the way that armadillo reads values into matrices
       std::cout << "B Matrix:" << std::endl;
-      std::cout << B.t() << std::endl;
+      std::cout << B << std::endl;
       
       //setup the parameter sweep along u
       Mat<double> T;
-      T.set_size(4,u_pnts);
+      T.set_size(5,u_pnts);
       
       double m = 1/(double(u_pnts)-1);
       
       for(int i=0; i < u_pnts; i++)
 	{
 	  double t = double(i)*m;
-	  T(0,i) = pow(t,3);
-	  T(1,i) = pow(t,2);
-	  T(2,i) = t;
-	  T(3,i) = 1;
+	  T(0,i) = pow(t,4);
+	  T(1,i) = pow(t,3);
+	  T(2,i) = pow(t,2);
+	  T(3,i) = t;
+	  T(4,i) = 1;
 	}
       
-      T=T.t();  
+      T=T.t();  // doing this so that the martix has the right form (n x 5)
       Mat<double> Q = T*B*P;
       
       //transform the answer so its easier to write to a file...
@@ -75,7 +74,7 @@ int main(int argc, char** argv)
 
       //create the filename
       std::ostringstream data_filename;
-      data_filename << "Problem1_k=" << k << ".dat";
+      data_filename << "Problem3.dat";
       filenames.push_back( data_filename.str() );
      
       data_file.open(&(data_filename.str()[0]) );
@@ -92,7 +91,7 @@ int main(int argc, char** argv)
       std::cout << "--------------------------------------" << std::endl;
       
       
-    }
+
 
   create_gnuplot_script( filenames );
   
