@@ -14,6 +14,9 @@ void de_cast( double u, Mat<double> CP, Mat<double> &pnt, std::vector<Mat<double
 int main(int argc, char** argv)
 {
 
+  std::vector<std::string> filenames;
+
+  int u_pnts = 20;
   double u = 0.5;
 
   // setup the point matrix
@@ -32,7 +35,42 @@ int main(int argc, char** argv)
   Mat<double> pnt(3,1);
   de_cast( u, P, pnt, plot_data );
 
-  std::cout << pnt << std::endl;
+  
+  //first, let's use de_cast to create the curve
+  
+  double m = 1/(double(u_pnts)-1);
+      
+  Mat<double> curve(3,u_pnts);
+  for(int i=0; i < u_pnts; i++)
+    {
+      u = double(i)*m;
+
+      de_cast( u, P, pnt, plot_data );
+      
+      curve(0,i) = pnt(0,0);
+      curve(1,i) = pnt(1,0);
+      curve(2,i) = pnt(2,0);
+
+    }
+
+  //write the curve points to a data file
+  std::ofstream data_file;
+  
+  //create the filename
+  std::ostringstream data_filename;
+  data_filename << "Problem4_curve.dat";
+  filenames.push_back( data_filename.str() );
+  
+  data_file.open(&(data_filename.str()[0]) );
+  
+  for(unsigned int i = 0; i < curve.n_cols; i++)
+    {
+      
+      data_file << curve(0,i) << "\t" << curve(1,i) << "\t" << curve(2,i) << "\n";
+      
+    }
+  
+  data_file.close();
 
   return 0;
 }
