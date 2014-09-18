@@ -65,16 +65,10 @@ void de_cast( double u, Mat<double> CP, Mat<double> &pnt, std::vector<Mat<double
       for( unsigned int i = 0; i < new_cols; i++) 
 	{
 	  //extract the vectors we want
-	  vec A(3);
-	  A(0) = CP(0,i);
-	  A(1) = CP(1,i);	    
-	  A(2) = CP(2,i);	    
+	  vec A = CP.col(i);
 
-	  vec B(3);
-	  B(0) = CP(0, i+1);
-	  B(1) = CP(1, i+1);
-	  B(2) = CP(2, i+1);
-	  
+	  vec B = CP.col(i+1);
+
 	  //calculate the new vectors
 	  vec new_vec = A + u*(B-A);
 	  
