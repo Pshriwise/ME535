@@ -1,0 +1,7 @@
+#!/bin/bash
+
+./build 
+
+./Problem1
+
+gnuplot Problem1_gp.p
