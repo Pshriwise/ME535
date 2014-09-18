@@ -10,64 +10,100 @@ using namespace arma;
 int main(int argc, char** argv)
 {
 
-
-  double k =1;
   int u_pnts= 20;
 
-  //create the point and vector arrays using the form 
-  //[x0, x1, dx0, dx1; y0 y1l dy0, dy1; z0, z1, dz0, dz1]
+  std::vector<double> ks(4);
+  ks[0] = 0.5; ks[1] = 1; ks[2] =  1.5; ks[3]= 2;
 
-  double p[12]= { 4,        4,        0,
-		  24,       4,        0,
-		  0.8320*k, 0.5547*k, 0,
-		  0.8320,   -0.5547,  0};
+  for( std::vector<double>::iterator i = ks.begin(); i!=ks.end(); i++)
+    {
+      double k = *i;
+      std::cout << "--------------------------------------" << std::endl;
+      std::cout << "k = " << k << std::endl << std::endl;;
+
+      //create the point and vector arrays using the form 
+      //[x0, x1, dx0, dx1; y0 y1l dy0, dy1; z0, z1, dz0, dz1]
+      
+      // setup the point matrix
+      double p[12]= { 4,        4,        0,
+		      24,       4,        0,
+		      0.8320*k, 0.5547*k, 0,
+		      0.8320,   -0.5547,  0};
   
-  Mat<double> P(p,3,4,false);
-  std::cout << P.t() << std::endl;
+      Mat<double> P(p,3,4,false);
+      P=P.t();
+      std::cout << "P Matrix:" << std::endl;
+      std::cout << P << std::endl;
+      
+      // now setup the coefficients for the basis matrix
+      double b[16]   =  { 2, -2,  1,  1,
+			 -3,  3, -2, -1,
+			 0,  0,  1,  0,
+			 1,  0,  0,  0};
+      
+      Mat<double> B(b,4,4,false);
+      B=B.t();
+      std::cout << "B Matrix:" << std::endl;
+      std::cout << B.t() << std::endl;
+      
+      //setup the parameter sweep along u
+      Mat<double> T;
+      T.set_size(4,u_pnts);
+      
+      double m = 1/(double(u_pnts)-1);
+      
+      for(int i=0; i < u_pnts; i++)
+	{
+	  double t = double(i)*m;
+	  T(0,i) = pow(t,3);
+	  T(1,i) = pow(t,2);
+	  T(2,i) = t;
+	  T(3,i) = 1;
+	}
+      
+      T=T.t();  
+      Mat<double> Q = T*B*P;
+      
+      //transform the answer so its easier to write to a file...
+      Q=Q.t();
+      
+      std::ofstream data_file;
 
-  double b[16]   = { 2, -2,  1,  1,
-		    -3,  3, -2, -1,
-		     0,  0,  1,  0,
-		     1,  0,  0,  0};
+      //create the filename
+      std::ostringstream data_filename;
+      data_filename << "Problem1_k=" << k << ".dat";
 
-  Mat<double> B(b,4,4,false);
-  std::cout << B.t() << std::endl;
+      data_file.open(&(data_filename.str()[0]) );
 
-  Mat<double> T;
-  T.set_size(4,u_pnts);
+      for(unsigned int i = 0; i < Q.n_cols; i++)
+	{
 
-  double m = 1/(double(u_pnts)-1);
+	  data_file << Q(0,i) << "\t" << Q(1,i) << "\t" << Q(2,i) << "\n";
+	  
+	}
 
-  for(int i=0; i < u_pnts; i++)
-    {
-      double t = double(i)*m;
-      std::cout << t << std::endl;
-      T(0,i) = pow(t,3);
-      T(1,i) = pow(t,2);
-      T(2,i) = t;
-      T(3,i) = 1;
+      data_file.close();
+
+      std::cout << "--------------------------------------" << std::endl;
+      
+      
     }
 
-  std::cout << T.t() << std::endl;
 
-  Mat<double> Q = T.t()*B.t()*P.t();
-
-  Q=Q.t();
-
-  std::ofstream data_file;
-  data_file.open("Problem1.dat");
-
-  for(unsigned int i = 0; i < Q.n_cols; i++)
-    {
-
-      data_file << Q(0,i) << "\t" << Q(1,i) << "\t" << Q(2,i) << "\n";
-
-    }
-
-  data_file.close();
-
-
+  
   return 0;
 
   
+}
+
+
+void create_gnuplot_script( std::string filename ) 
+{
+
+  std::ofstream gp_script;
+  
+  gp_script.open("Problem1_plot");
+
+  
+
 }
