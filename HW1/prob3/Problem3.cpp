@@ -13,7 +13,7 @@ void create_gnuplot_script( std::vector<std::string> filenames );
 int main(int argc, char** argv)
 {
 
-  int u_pnts= 20;
+  int u_pnts= 50;
 
 
   std::vector<std::string> filenames;
@@ -106,18 +106,18 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   
   std::ofstream gp_script;
   
-  gp_script.open("Problem1_gp.p");
+  gp_script.open("Problem3_gp.p");
 
   gp_script << "#Name: Patrick Shriwise \t Date: 9/22/14 \n" ;
-  gp_script << "#This is a gnuplot file for ploting data for Problem 1 in HW 1 \n";
+  gp_script << "#This is a gnuplot file for ploting data for Problem 3 in HW 1 \n";
   gp_script << "#for ME 535 at the University of Wisconsin - Madison\n \n";
 
-  gp_script << "#This file will generate the plot for each k in a new color with \n";
-  gp_script << "#with a legend to indicate which curve matches which k. \n";
+  gp_script << "#This script plots a 4th degree Bezier curve using the points:\n";
+  gp_script << "# [0,0;1,2;3,5;4,4;5,0]\n";
 
   gp_script << "plot ";
   for(unsigned int i = 0; i < filenames.size(); i++){
-    gp_script << "'" << filenames[i] << "' using 1:2" << " title " << "'" << filenames[i].substr(9,100) << "'";
+    gp_script << "'" << filenames[i] << "' using 1:2";
       if( i != filenames.size()-1) gp_script <<", \\\n";
   }
   gp_script << "\n";
@@ -125,13 +125,14 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "set xlabel 'x' \n";
   gp_script << "set ylabel 'y' \n";
   gp_script << "set zlabel 'z' \n";
-  gp_script << "set title 'HW1_Problem1' \n";
+  gp_script << "set title 'HW1_Problem3 Bezier Curve' \n";
   gp_script << "set mytics '4' \n";
   gp_script << "set mxtics '4' \n";
-  
+  gp_script << "set nokey \n";
+
   //no more settings after here
   gp_script << "replot \n";
-  gp_script << "set output 'Problem1.png'\n";
+  gp_script << "set output 'Problem3.png'\n";
   gp_script << "\n"; gp_script << "pause -1";
   gp_script.close();
 }
