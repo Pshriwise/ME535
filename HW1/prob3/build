@@ -1,1 +1,1 @@
-g++ Problem1.cpp -o Problem1 -larmadillo
+g++ Problem3.cpp -o Problem3 -larmadillo

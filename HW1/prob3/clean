@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm Problem1
+rm Problem3
 
 rm *.dat
 
