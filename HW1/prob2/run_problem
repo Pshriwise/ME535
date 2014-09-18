@@ -2,6 +2,6 @@
 
 ./build 
 
-./Problem1
+./Problem2
 
-gnuplot Problem1_gp.p
+gnuplot Problem2_gp.p
