@@ -5,3 +5,5 @@ rm Problem1
 rm *.dat
 
 rm *.p
+
+rm *.png

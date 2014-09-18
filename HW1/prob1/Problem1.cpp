@@ -132,6 +132,7 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   
   //no more settings after here
   gp_script << "replot \n";
+  gp_script << "set output 'Problem1.png'\n";
   gp_script << "\n"; gp_script << "pause -1";
   gp_script.close();
 }
