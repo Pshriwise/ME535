@@ -146,7 +146,10 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "set nokey \n";
   //no more settings after here
   gp_script << "replot \n";
-  gp_script << "set output 'Problem4_whole_curve.png'";
+  gp_script << "set terminal png\n";
+  gp_script << "set output 'Problem4_whole_curve.png'\n";
+  gp_script << "replot\n";
+  gp_script << "set terminal wxt\n";
   gp_script << "\n"; gp_script << "pause -1\n";
   unsigned int limit = filenames.size()-2; // the last two files are for the closed curve stuff
   for(unsigned int i = 1; i < limit; i++){
@@ -174,7 +177,10 @@ void create_gnuplot_script( std::vector<std::string> filenames )
 
     //no more settings after here
     gp_script << "replot \n";
-    gp_script << "set output 'Problem4_" << u_val << "_w_alg.png'";
+    gp_script << "set terminal png\n";
+    gp_script << "set output 'Problem4_" << u_val << "_w_alg.png'\n";
+    gp_script << "replot\n";
+    gp_script << "set terminal wxt\n";
     gp_script << "\n"; gp_script << "pause -1";
     gp_script << std::endl;
   }
@@ -198,7 +204,10 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "set nokey \n";
   //no more settings after here
   gp_script << "replot \n";
-  gp_script << "set output 'Problem4_closed_curve.png'";
+  gp_script << "set terminal png\n";
+  gp_script << "set output 'Problem4_closed_curve.png'\n";
+  gp_script << "replot \n";
+  gp_script << "set terminal wxt\n";
   gp_script << "\n"; gp_script << "pause -1\n";
   
   ///PART D PLOT\\\
@@ -220,8 +229,12 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "set nokey \n";
   //no more settings after here
   gp_script << "replot \n";
-  gp_script << "set output 'Problem4_C1_closed_curve.png'";
-  gp_script << "\n"; gp_script << "pause -1\n";
+  gp_script << "set terminal png\n";
+  gp_script << "set output 'Problem4_C1_closed_curve.png'\n";
+  gp_script << "replot \n";
+  gp_script << "set terminal wxt\n";
+  gp_script << "\n"; gp_script << "pause -1" << std::endl;
+
 
   gp_script.close();
 }
