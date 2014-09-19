@@ -96,14 +96,14 @@ int main(int argc, char** argv)
       data_file.open( &(filename.str()[0]) );
 
       // for each matrix, plot the points
-      for(std::vector<Mat<double> >::iterator j = plot_data.begin();
-	  j != plot_data.end(); j++)
+      for( unsigned int j = 0; j < plot_data.size(); j++)
 	{
 
-	  Mat<double> this_mat = *j;
+	  Mat<double> this_mat = plot_data[j];
 	  for( unsigned int k =0; k < this_mat.n_cols; k++)
 	    data_file << this_mat(0,k) << "\t" << this_mat(1,k)
-		      << "\t" << this_mat(2,k) << "\n";
+		      << "\t" << this_mat(2,k) 
+		      << "\t" << j << "\n";
 
 	  data_file << "\n";
 	}
@@ -163,10 +163,10 @@ void create_gnuplot_script( std::vector<std::string> filenames )
     u_val.erase( u_val.end()-4, u_val.end() );
     gp_script<< "plot ";
     //plot the normal curve
-    gp_script << "'" <<curve_datafile << "'"<< " using 1:2 w lines lc rgb 'black', \\\n";
+    gp_script << "'" <<curve_datafile << "'"<< " using 1:2 w lines lc rgb 'blue', \\\n";
     //now plot the algorithm data w/ this
-    gp_script << "'" << dcalg_datafile << "'" << " using 1:2 w lines lc rgb 'blue', \\\n";
-    gp_script << "'" << dcalg_datafile << "'" << " using 1:2 lc rgb 'red' pt 7 \n";
+    gp_script << "'" << dcalg_datafile << "'" << " using 1:2:4 w lines linecolor variable, \\\n";
+    gp_script << "'" << dcalg_datafile << "'" << " using 1:2:4 w points lc variable pt 7 \n";
     
   
     gp_script << "set xlabel 'x' \n";
