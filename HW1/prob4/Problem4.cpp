@@ -60,9 +60,15 @@ int main(int argc, char** argv)
 
 	  Mat<double> this_mat = plot_data[j];
 	  for( unsigned int k =0; k < this_mat.n_cols; k++)
-	    data_file << this_mat(0,k) << "\t" << this_mat(1,k)
-		      << "\t" << this_mat(2,k) 
-		      << "\t" << j << "\n";
+	    {
+	      data_file << this_mat(0,k) << "\t" << this_mat(1,k)
+			<< "\t" << this_mat(2,k) 
+			<< "\t" << j ;
+	      //print our final point at the end of the first line
+	      if( 0 == j && 0 == k ) data_file << "\t" << pnt(0,0) << "\t" << pnt(1,0) << "\t" << pnt(2,0);
+	  
+	      data_file<< "\n";
+	    }
 
 	  data_file << "\n";
 	}
@@ -92,7 +98,7 @@ int main(int argc, char** argv)
   // add point before the last point (0,0,0) such that it is co-linear with the second point in P
   // ( the second point in P is 1,2,0. We'll just use the negative of that (-1,-2,0)
   colvec p;
-  p << -1 << -2 << 0;
+  p << -0.5 << -1 << 0;
 
   P1.insert_cols( P1.n_cols-1, p);
 
@@ -122,6 +128,8 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "# [0,0;1,2;3,5;4,4;5,0]\n";
   gp_script << "# It also shows the process behind De Casteljau's Algorithm for plotting Bezier curve points\n";
 
+  gp_script << "#Function for plotting x,y coords as labels\n";
+  gp_script <<"get_point(x,y) = sprintf('(%.4f,%.4f)', x, y)\n";
   //get the curve filename
   std::string curve_datafile = filenames[0];
   // plot the full curve first
@@ -153,9 +161,9 @@ void create_gnuplot_script( std::vector<std::string> filenames )
     gp_script << "'" <<curve_datafile << "'"<< " using 1:2 w lines lc rgb 'blue', \\\n";
     //now plot the algorithm data w/ this
     gp_script << "'" << dcalg_datafile << "'" << " using 1:2:4 w lines linecolor variable, \\\n";
-    gp_script << "'" << dcalg_datafile << "'" << " using 1:2:4 w points lc variable pt 7 \n";
-    
-  
+    gp_script << "'" << dcalg_datafile << "'" << " using 1:2:4 w points lc variable pt 7, \\\n";
+    //label the final point w/ it's coordinates
+    gp_script << "'" << dcalg_datafile << "'" << " using ($5+0.3):($6-0.2):(get_point($5,$6)) with labels \n";
     gp_script << "set xlabel 'x' \n";
     gp_script << "set ylabel 'y' \n";
     gp_script << "set zlabel 'z' \n";
