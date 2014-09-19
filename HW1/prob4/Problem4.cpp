@@ -96,6 +96,7 @@ int main(int argc, char** argv)
 
   P1.insert_cols( P1.n_cols-1, p);
 
+  u_pnts += 30; // increase the points so we can see the continuituy in the corner near the origin
   write_curve_to_file( P1, u_pnts, "Problem4_curve_closed_cont.dat", filenames);
   
 
