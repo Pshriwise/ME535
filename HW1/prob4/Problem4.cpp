@@ -139,8 +139,8 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "replot \n";
   gp_script << "set output 'Problem4_whole_curve.png'";
   gp_script << "\n"; gp_script << "pause -1\n";
-
-  for(unsigned int i = 1; i < filenames.size(); i++){
+  unsigned int limit = filenames.size()-2; // the last two files are for the closed curve stuff
+  for(unsigned int i = 1; i < limit; i++){
   
 
     std::string dcalg_datafile = filenames[i];
@@ -169,6 +169,50 @@ void create_gnuplot_script( std::vector<std::string> filenames )
     gp_script << "\n"; gp_script << "pause -1";
     gp_script << std::endl;
   }
+
+
+  ///PART C PLOT\\\
+  //now time to plot the closed curves just like the original
+  //get the curve filename
+  curve_datafile = filenames[4];
+  // plot the full curve first
+  gp_script << "plot ";
+  //assume the curve infor is in the first filename
+  gp_script << "'" <<curve_datafile << "'"<< " using 1:2 w lines lc rgb 'blue', \\\n";
+  gp_script << "'" <<curve_datafile << "'"<< " using 1:2 lc rgb 'blue' pt 7\n";
+  gp_script << "set xlabel 'x' \n";
+  gp_script << "set ylabel 'y' \n";
+  gp_script << "set zlabel 'z' \n";
+  gp_script << "set title 'HW1_Problem4 De Casteljau Algorithm (closed curve)' \n";
+  gp_script << "set mytics '4' \n";
+  gp_script << "set mxtics '4' \n";
+  gp_script << "set nokey \n";
+  //no more settings after here
+  gp_script << "replot \n";
+  gp_script << "set output 'Problem4_closed_curve.png'";
+  gp_script << "\n"; gp_script << "pause -1\n";
+  
+  ///PART D PLOT\\\
+
+  //now time to plot the closed curves just like the original
+  //get the curve filename
+  curve_datafile = filenames[5];
+  // plot the full curve first
+  gp_script << "plot ";
+  //assume the curve infor is in the first filename
+  gp_script << "'" <<curve_datafile << "'"<< " using 1:2 w lines lc rgb 'blue', \\\n";
+  gp_script << "'" <<curve_datafile << "'"<< " using 1:2 lc rgb 'blue' pt 7\n";
+  gp_script << "set xlabel 'x' \n";
+  gp_script << "set ylabel 'y' \n";
+  gp_script << "set zlabel 'z' \n";
+  gp_script << "set title 'HW1_Problem4 De Casteljau Algorithm (C1 closed curve)' \n";
+  gp_script << "set mytics '4' \n";
+  gp_script << "set mxtics '4' \n";
+  gp_script << "set nokey \n";
+  //no more settings after here
+  gp_script << "replot \n";
+  gp_script << "set output 'Problem4_C1_closed_curve.png'";
+  gp_script << "\n"; gp_script << "pause -1\n";
 
   gp_script.close();
 }
