@@ -151,28 +151,39 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "set nokey \n";
   //no more settings after here
   gp_script << "replot \n";
-  gp_script << "set output 'Problem4.png'";
+  gp_script << "set output 'Problem4_whole_curve.png'";
   gp_script << "\n"; gp_script << "pause -1\n";
-  /*
-  for(unsigned int i = 0; i < filenames.size(); i++){
-    gp_script << "'" << filenames[i] << "' using 1:2";
-      if( i != filenames.size()-1) gp_script <<", \\\n";
-  }
-  gp_script << "\n";
-  
-  gp_script << "set xlabel 'x' \n";
-  gp_script << "set ylabel 'y' \n";
-  gp_script << "set zlabel 'z' \n";
-  gp_script << "set title 'HW1_Problem4 De Casteljau Algorithm' \n";
-  gp_script << "set mytics '4' \n";
-  gp_script << "set mxtics '4' \n";
-  gp_script << "set nokey \n";
 
-  //no more settings after here
-  gp_script << "replot \n";
-  gp_script << "set output 'Problem4.png'";
-  gp_script << "\n"; gp_script << "pause -1";
-  */
+  for(unsigned int i = 1; i < filenames.size(); i++){
+  
+
+    std::string dcalg_datafile = filenames[i];
+    std::string u_val = filenames[i].substr(9,100);
+    //remove the ".dat" from the filename
+    u_val.erase( u_val.end()-4, u_val.end() );
+    gp_script<< "plot ";
+    //plot the normal curve
+    gp_script << "'" <<curve_datafile << "'"<< " using 1:2 w lines lc rgb 'black', \\\n";
+    //now plot the algorithm data w/ this
+    gp_script << "'" << dcalg_datafile << "'" << " using 1:2 w lines lc rgb 'blue', \\\n";
+    gp_script << "'" << dcalg_datafile << "'" << " using 1:2 lc rgb 'red' pt 7 \n";
+    
+  
+    gp_script << "set xlabel 'x' \n";
+    gp_script << "set ylabel 'y' \n";
+    gp_script << "set zlabel 'z' \n";
+    gp_script << "set title 'HW1_Problem4 De Casteljau Algorithm for " << u_val << "' \n";
+    gp_script << "set mytics '4' \n";
+    gp_script << "set mxtics '4' \n";
+    gp_script << "set nokey \n";
+
+    //no more settings after here
+    gp_script << "replot \n";
+    gp_script << "set output 'Problem4_" << u_val << "_w_alg.png'";
+    gp_script << "\n"; gp_script << "pause -1";
+    gp_script << std::endl;
+  }
+
   gp_script.close();
 }
 
