@@ -10,6 +10,7 @@ using namespace arma;
 
 
 void de_cast( double u, Mat<double> CP, Mat<double> &pnt, std::vector<Mat<double > > &plot_data );
+void create_gnuplot_script( std::vector<std::string> filenames );
 
 int main(int argc, char** argv)
 {
@@ -28,7 +29,7 @@ int main(int argc, char** argv)
     << 5 << 0 << 0 << endr;
 
   P = P.t();
-
+  
 
   std::vector<Mat<double> > plot_data;
 
@@ -113,9 +114,66 @@ int main(int argc, char** argv)
       data_file.close();
     }
 
-
+  create_gnuplot_script( filenames );
 
   return 0;
+}
+
+
+void create_gnuplot_script( std::vector<std::string> filenames ) 
+{
+  
+  std::ofstream gp_script;
+  
+  gp_script.open("Problem4_gp.p");
+
+  gp_script << "#Name: Patrick Shriwise \t Date: 9/22/14 \n" ;
+  gp_script << "#This is a gnuplot file for ploting data for Problem 3 in HW 1 \n";
+  gp_script << "#for ME 535 at the University of Wisconsin - Madison\n \n";
+
+  gp_script << "#This script plots a 4th degree Bezier curve using the points:\n";
+  gp_script << "# [0,0;1,2;3,5;4,4;5,0]\n";
+  gp_script << "# It also shows the process behind De Casteljau's Algorithm for plotting Bezier curve points\n";
+
+  //get the curve filename
+  std::string curve_datafile = filenames[0];
+  // plot the full curve first
+  gp_script << "plot ";
+  //assume the curve infor is in the first filename
+  gp_script << "'" <<curve_datafile << "'"<< " using 1:2 w lines lc rgb 'blue', \\\n";
+  gp_script << "'" <<curve_datafile << "'"<< " using 1:2 lc rgb 'blue' pt 7\n";
+  gp_script << "set xlabel 'x' \n";
+  gp_script << "set ylabel 'y' \n";
+  gp_script << "set zlabel 'z' \n";
+  gp_script << "set title 'HW1_Problem4 De Casteljau Algorithm (whole curve)' \n";
+  gp_script << "set mytics '4' \n";
+  gp_script << "set mxtics '4' \n";
+  gp_script << "set nokey \n";
+  //no more settings after here
+  gp_script << "replot \n";
+  gp_script << "set output 'Problem4.png'";
+  gp_script << "\n"; gp_script << "pause -1\n";
+  /*
+  for(unsigned int i = 0; i < filenames.size(); i++){
+    gp_script << "'" << filenames[i] << "' using 1:2";
+      if( i != filenames.size()-1) gp_script <<", \\\n";
+  }
+  gp_script << "\n";
+  
+  gp_script << "set xlabel 'x' \n";
+  gp_script << "set ylabel 'y' \n";
+  gp_script << "set zlabel 'z' \n";
+  gp_script << "set title 'HW1_Problem4 De Casteljau Algorithm' \n";
+  gp_script << "set mytics '4' \n";
+  gp_script << "set mxtics '4' \n";
+  gp_script << "set nokey \n";
+
+  //no more settings after here
+  gp_script << "replot \n";
+  gp_script << "set output 'Problem4.png'";
+  gp_script << "\n"; gp_script << "pause -1";
+  */
+  gp_script.close();
 }
 
 // plot data will contain all information if the user wants to plot
