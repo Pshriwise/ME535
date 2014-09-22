@@ -85,8 +85,10 @@ void create_gnuplot_script( std::vector<std::string> filenames )
 
   gp_script << "plot ";
   for(unsigned int i = 0; i < filenames.size(); i++){
-    gp_script << "'" << filenames[i] << "' using 1:2";
+    gp_script << "'" << filenames[i] << "' using 1:2 w lines,";
+    gp_script << "'" << filenames[i] << "' using 1:2 lc rgb 'blue'";
       if( i != filenames.size()-1) gp_script <<", \\\n";
+
   }
   gp_script << "\n";
   
