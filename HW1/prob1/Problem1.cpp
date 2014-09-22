@@ -131,9 +131,13 @@ void create_gnuplot_script( std::vector<std::string> filenames )
   gp_script << "set mxtics '4' \n";
   
   //no more settings after here
-  gp_script << "replot \n";
+  gp_script << "set terminal png\n";
   gp_script << "set output 'Problem1.png'\n";
+  gp_script << "replot \n";
+  gp_script << "set term wxt\n";
+  gp_script << "replot \n";
   gp_script << "\n"; gp_script << "pause -1";
   gp_script.close();
+
 }
 
