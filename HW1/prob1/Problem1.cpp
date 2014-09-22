@@ -118,7 +118,9 @@ void create_gnuplot_script( std::vector<std::string> filenames )
 
   gp_script << "plot ";
   for(unsigned int i = 0; i < filenames.size(); i++){
-    gp_script << "'" << filenames[i] << "' using 1:2" << " title " << "'" << filenames[i].substr(9,100) << "'";
+    std::string u_val = filenames[i].substr(9,100);
+    u_val.erase( u_val.end()-4, u_val.end() ); // remove the ".dat" from the filname
+    gp_script << "'" << filenames[i] << "' using 1:2" << " title " << "'" << u_val << "'";
       if( i != filenames.size()-1) gp_script <<", \\\n";
   }
   gp_script << "\n";
