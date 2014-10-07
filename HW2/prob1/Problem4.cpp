@@ -37,6 +37,23 @@ int main( int argc, char** argv)
   std::cout << derivative << std::endl;
 
 
+  //part B
+
+  Mat<double>sum(3,1);
+  double interval = 0.00001;
+  for( double d = 0.0; d <= 1.0; d += interval )
+    {
+      Mat<double>pnt;
+      //get the value of the curve at d
+      de_cast( d, P, pnt, plot_dat);
+
+      //after every point, add the current value to the sum
+      sum = sum+(interval*pnt);
+
+    }
+
+  std::cout << sum << std::endl;
+
 return 0;
 
 }
