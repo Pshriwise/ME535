@@ -20,24 +20,33 @@ int main( int argc, char** argv)
      << 227 << 329.5 << 0 << endr
      << 227 << 410 << 0 << endr;
 
-  P1=P1.t();
-
   Mat<double> P2; 
   P2 << 227 << 410 << 0 << endr
      << 227 << 437 << 0 << endr
      << 250 << 463 << 0 << endr
      << 290 << 463 << 0 << endr;
 
-  P2=P2.t();
+
 
 
   Mat<double> P3; 
   P3 << 290 << 463 << 0 << endr
      << 345 << 463 << 0 << endr
      << 383 << 430 << 0 << endr
-     << 391 << 358 << 0 << endr;
+     << 391 << 360 << 0 << endr;
     
-  P3=P3.t();
+  Mat<double> P4;
+  P4 << 391 << 360 << 0 << endr
+     << 391 << 360 << 0 << endr
+     << 391 << 360 << 0 << endr
+     << 402 << 360 << 0 << endr; 
+
+
+  Mat<double> P5; 
+  P5 << 402 << 360 << 0 << endr
+     << 402 << 360 << 0 << endr 
+     << 402 << 360 << 0 << endr
+     << 402 << 485 << 0 << endr; 
 
 
   //open file to write data to
@@ -54,9 +63,11 @@ int main( int argc, char** argv)
 
   //create a vector of CP matrices
   std::vector< Mat<double> > CPs;
-  CPs.push_back(P1);
-  CPs.push_back(P2);
-  CPs.push_back(P3);
+  CPs.push_back( P1.t() );
+  CPs.push_back( P2.t() );
+  CPs.push_back( P3.t() );
+  CPs.push_back( P4.t() );
+  CPs.push_back( P5.t() );
 
   for( std::vector< Mat<double> >::iterator i = CPs.begin();
        i != CPs.end() ; i++)
