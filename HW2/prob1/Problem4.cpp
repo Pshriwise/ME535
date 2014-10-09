@@ -54,6 +54,18 @@ int main( int argc, char** argv)
 
   std::cout << sum << std::endl;
 
+
+  //Part D
+  Mat<double> pnt; 
+  plot_dat.clear();
+  de_cast( 0.75, P, pnt, plot_dat);
+
+  std::cout << pnt << std::endl; 
+ 
+  for(unsigned int i = 0 ; i < plot_dat.size(); i++)
+  std::cout << plot_dat[i]  << std::endl; 
+
+
 return 0;
 
 }
