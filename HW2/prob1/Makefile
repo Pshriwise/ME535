@@ -7,4 +7,4 @@ build:
 
 clean:
 
-	rm -f Problem4 *~ *#
+	rm -f Problem3 *~ *#
