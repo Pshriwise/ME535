@@ -70,6 +70,27 @@ int main( int argc, char** argv)
   C5 = join_vert(C5, new_pnts);
 
 
+  Mat<double> C6; 
+
+  C6.insert_rows(0, C5.row(3) );
+  C6.insert_rows(1, C5.row(3) );
+  C6.insert_rows(2, C5.row(3) );
+  
+  new_pnts << 390.5 << 485 << 0 << endr;
+
+  C6= join_vert(C6, new_pnts); 
+
+  Mat<double> C7;
+
+  C7.insert_rows(0, C6.row(3) );
+
+  new_pnts << 391 << 473 << 0 << endr
+           << 380 << 463 << 0 << endr
+	   << 372 << 465 << 0 << endr;
+  
+  C7 = join_vert(C7, new_pnts);
+  
+
   //open file to write data to
   std::ofstream datafile;
   datafile.open("S_curves.dat");
@@ -89,6 +110,8 @@ int main( int argc, char** argv)
   CPs.push_back( C3.t() );
   CPs.push_back( C4.t() );
   CPs.push_back( C5.t() );
+  CPs.push_back( C6.t() );
+  CPs.push_back( C7.t() );
 
   for( std::vector< Mat<double> >::iterator i = CPs.begin();
        i != CPs.end() ; i++)
