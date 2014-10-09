@@ -3,7 +3,7 @@
 
 
 build:
-	g++ Problem4.cpp -o Problem4 -g -larmadillo
+	g++ Problem3.cpp -o Problem3 -g -larmadillo
 
 clean:
 

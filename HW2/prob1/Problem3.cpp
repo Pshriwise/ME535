@@ -10,14 +10,24 @@ void de_cast( double u, Mat<double> CP, Mat<double> &pnt, std::vector<Mat<double
 
 void de_cast_prime( double u, double order, Mat<double> CP, Mat<double> &value, std::vector<Mat<double > > &plot_data );
 
+inline void part_header( std::string part)
+{
+
+  std::cout << std::endl;
+  std::cout << "------------------------------------------" << std::endl;
+  std::cout << "PART " << part << std::endl;
+  std::cout << "------------------------------------------" << std::endl;
+  std::cout << std::endl;
+
+}
 
 int main( int argc, char** argv) 
 {
 
 
-//Part A 
-
-//get the derivative of the curve at this point
+  //Part A 
+  part_header("A");
+  //get the derivative of the curve at this point
   double u = 0.5; 
 
   //define the control point matrix
@@ -34,10 +44,13 @@ int main( int argc, char** argv)
   std::vector< Mat<double> > plot_dat;
   de_cast_prime( u, (P.n_cols-1),  P, derivative, plot_dat);
 
+  std::cout << "The derivative of the curve at u=" << u << " is:" << std::endl; 
+
   std::cout << derivative << std::endl;
 
 
   //part B
+  part_header("B");
 
   Mat<double>sum(3,1);
   double interval = 0.00001;
@@ -52,18 +65,22 @@ int main( int argc, char** argv)
 
     }
 
-  std::cout << sum << std::endl;
+  std::cout << "The integral of the x and y coordinates for this curve is:" << std::endl; 
+
+  std::cout << "int of x= " << sum(0) << "\t" << "int of y= " << sum(1)  << std::endl;
 
 
   //Part D
+  part_header("D");
+
   Mat<double> pnt; 
   plot_dat.clear();
   de_cast( 0.75, P, pnt, plot_dat);
-
-  std::cout << pnt << std::endl; 
+  
+  std::cout << "De Casteljau output for u = 0.75:" << std::endl;
  
   for(unsigned int i = 0 ; i < plot_dat.size(); i++)
-  std::cout << plot_dat[i]  << std::endl; 
+    std::cout << "Alg level " << i << ":" << std::endl << plot_dat[i]  << std::endl; 
 
 
 return 0;
