@@ -38,7 +38,7 @@ int main( int argc, char** argv)
 	   << 290 << 463 << 0 << endr;
   
   //join the new and old
-  C2= join_vert(C2, new_pnts);
+  C2 = join_cols(C2, new_pnts);
 
 
   Mat<double> C3; 
@@ -48,7 +48,7 @@ int main( int argc, char** argv)
            << 383 << 430 << 0 << endr
            << 391 << 360 << 0 << endr;
 
-  C3 = join_vert(C3, new_pnts);
+  C3 = join_cols(C3, new_pnts);
     
   Mat<double> C4;
 
@@ -58,7 +58,7 @@ int main( int argc, char** argv)
 
   new_pnts << 402 << 360 << 0 << endr; 
 
-  C4 = join_vert(C4, new_pnts);
+  C4 = join_cols(C4, new_pnts);
 
   Mat<double> C5; 
   C5.insert_rows(0, C4.row(3) );
@@ -67,7 +67,7 @@ int main( int argc, char** argv)
 
   new_pnts << 402 << 485 << 0 << endr; 
 
-  C5 = join_vert(C5, new_pnts);
+  C5 = join_cols(C5, new_pnts);
 
 
   Mat<double> C6; 
@@ -78,19 +78,29 @@ int main( int argc, char** argv)
   
   new_pnts << 390.5 << 485 << 0 << endr;
 
-  C6= join_vert(C6, new_pnts); 
+  C6= join_cols(C6, new_pnts); 
 
   Mat<double> C7;
 
   C7.insert_rows(0, C6.row(3) );
 
-  new_pnts << 391 << 473 << 0 << endr
-           << 380 << 463 << 0 << endr
-	   << 372 << 465 << 0 << endr;
+  new_pnts << 382 << 437 << 0 << endr
+           << 350 << 486 << 0 << endr
+	   << 289 << 486 << 0 << endr;
   
-  C7 = join_vert(C7, new_pnts);
+  C7 = join_cols(C7, new_pnts);
   
 
+  Mat<double> C8;
+
+  C8.insert_rows(0, C7.row(3));
+
+  new_pnts << 230 << 485 << 0 << endr
+           << 183.2 << 444 << 0 << endr
+           << 183.5 << 390.2 << 0 << endr;
+
+  C8= join_cols(C8, new_pnts);
+  
   //open file to write data to
   std::ofstream datafile;
   datafile.open("S_curves.dat");
@@ -112,6 +122,7 @@ int main( int argc, char** argv)
   CPs.push_back( C5.t() );
   CPs.push_back( C6.t() );
   CPs.push_back( C7.t() );
+  CPs.push_back( C8.t() );
 
   for( std::vector< Mat<double> >::iterator i = CPs.begin();
        i != CPs.end() ; i++)
