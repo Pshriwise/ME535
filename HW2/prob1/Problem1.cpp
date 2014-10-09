@@ -13,40 +13,61 @@ int main( int argc, char** argv)
 {
 
 
+  Mat<double>new_pnts;
+
+
   //setup the first bezier curve
-  Mat<double> P1;
-  P1 << 425 << 210 << 0 << endr
-     << 425 << 318.5 << 0 << endr
-     << 227 << 329.5 << 0 << endr
-     << 227 << 410 << 0 << endr;
+  Mat<double> C1;
+  
+  new_pnts << 425 << 210 << 0 << endr
+           << 425 << 318.5 << 0 << endr
+           << 227 << 329.5 << 0 << endr
+           << 227 << 410 << 0 << endr;
 
-  Mat<double> P2; 
-  P2 << 227 << 410 << 0 << endr
-     << 227 << 437 << 0 << endr
-     << 250 << 463 << 0 << endr
-     << 290 << 463 << 0 << endr;
+  C1 = new_pnts; 
 
 
+  Mat<double> C2; 
+
+  //keep the last point from P1
+  C2.insert_rows( 0, C1.row(3) );
+
+  new_pnts.clear();
+  new_pnts << 227 << 437 << 0 << endr
+           << 250 << 463 << 0 << endr
+	   << 290 << 463 << 0 << endr;
+  
+  //join the new and old
+  C2= join_vert(C2, new_pnts);
 
 
-  Mat<double> P3; 
-  P3 << 290 << 463 << 0 << endr
-     << 345 << 463 << 0 << endr
-     << 383 << 430 << 0 << endr
-     << 391 << 360 << 0 << endr;
+  Mat<double> C3; 
+  C3.insert_rows(0, C2.row(3) );
+
+  new_pnts << 345 << 463 << 0 << endr
+           << 383 << 430 << 0 << endr
+           << 391 << 360 << 0 << endr;
+
+  C3 = join_vert(C3, new_pnts);
     
-  Mat<double> P4;
-  P4 << 391 << 360 << 0 << endr
-     << 391 << 360 << 0 << endr
-     << 391 << 360 << 0 << endr
-     << 402 << 360 << 0 << endr; 
+  Mat<double> C4;
 
+  C4.insert_rows(0, C3.row(3) );
+  C4.insert_rows(1, C3.row(3) );
+  C4.insert_rows(2, C3.row(3) );
 
-  Mat<double> P5; 
-  P5 << 402 << 360 << 0 << endr
-     << 402 << 360 << 0 << endr 
-     << 402 << 360 << 0 << endr
-     << 402 << 485 << 0 << endr; 
+  new_pnts << 402 << 360 << 0 << endr; 
+
+  C4 = join_vert(C4, new_pnts);
+
+  Mat<double> C5; 
+  C5.insert_rows(0, C4.row(3) );
+  C5.insert_rows(1, C4.row(3) );
+  C5.insert_rows(2, C4.row(3) );
+
+  new_pnts << 402 << 485 << 0 << endr; 
+
+  C5 = join_vert(C5, new_pnts);
 
 
   //open file to write data to
@@ -63,11 +84,11 @@ int main( int argc, char** argv)
 
   //create a vector of CP matrices
   std::vector< Mat<double> > CPs;
-  CPs.push_back( P1.t() );
-  CPs.push_back( P2.t() );
-  CPs.push_back( P3.t() );
-  CPs.push_back( P4.t() );
-  CPs.push_back( P5.t() );
+  CPs.push_back( C1.t() );
+  CPs.push_back( C2.t() );
+  CPs.push_back( C3.t() );
+  CPs.push_back( C4.t() );
+  CPs.push_back( C5.t() );
 
   for( std::vector< Mat<double> >::iterator i = CPs.begin();
        i != CPs.end() ; i++)
