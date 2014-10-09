@@ -74,6 +74,61 @@ int main( int argc, char** argv)
     std::cout << "Alg level " << i << ":" << std::endl << plot_dat[i]  << std::endl; 
 
 
+  Mat<double>CP1;
+  CP1 << 0    << 0    << 0 << endr
+      << 0.75 << 1.5  << 0 << endr 
+      << 2.0625 << 3.5625 << 0  << endr
+      << 3.0938 << 4.0781 << 0  << endr;
+
+  CP1= CP1.t();
+
+
+  Mat<double>CP2;
+  CP2 << 3.0938 << 4.0781 << 0 << endr
+      << 3.4375 << 4.25 << 0 << endr
+      << 3.75 << 4.25 << 0  << endr
+      << 4.0 << 4.0 << 0  << endr;
+
+  CP2 = CP2.t();
+
+
+
+  std::ofstream data_file1;
+  data_file1.open("curve1.dat");
+
+  std::ofstream data_file2;
+  data_file2.open("curve2.dat");
+
+
+  std::ofstream data_file3;
+  data_file3.open("orig_curve.dat");
+
+  for(double t = 0; t < 1 ; t+=0.01)
+    {
+
+      //get value of the first curve
+      de_cast( t, CP1, pnt, plot_dat);
+      
+      //write point to file
+      data_file1 << t << "\t"  << pnt(0) << "\t" << pnt(1) << "\t" << pnt(2) << std::endl;
+      
+      //get value of the second curve
+      de_cast( t, CP2, pnt, plot_dat);
+
+      //write point to file
+      data_file2 << t+1.0 << "\t" << pnt(0) << "\t" << pnt(1) << "\t" << pnt(2) << std::endl;
+
+      //get value of the second curve
+      de_cast( t, P, pnt, plot_dat);
+      
+
+      //write point to file
+      data_file3 << t << "\t" << pnt(0) << "\t" << pnt(1) << "\t" << pnt(2) << std::endl;
+	
+    }
+
+  
+      
 return 0;
 
 }
