@@ -96,10 +96,93 @@ int main( int argc, char** argv)
   C8.insert_rows(0, C7.row(3));
 
   new_pnts << 230 << 485 << 0 << endr
-           << 183.2 << 444 << 0 << endr
+           << 183.5 << 444 << 0 << endr
            << 183.5 << 390.2 << 0 << endr;
 
   C8= join_cols(C8, new_pnts);
+
+
+  Mat<double> C9;
+
+  C9.insert_rows(0, C8.row(3));
+
+  new_pnts << 183.5 << 275 << 0 << endr
+           << 377 << 275 << 0 << endr
+           << 377 << 186 << 0 << endr;
+
+  C9= join_cols(C9, new_pnts);
+
+  Mat<double> C10;
+
+  C10.insert_rows(0, C9.row(3));
+
+  new_pnts << 377 << 152 << 0 << endr
+           << 349 << 126.5 << 0 << endr
+           << 305 << 126.5 << 0 << endr;
+
+  C10= join_cols(C10, new_pnts);
+
+
+  Mat<double> C11;
+
+  C11.insert_rows(0, C10.row(3));
+
+  new_pnts << 244 << 126.5 << 0 << endr
+           << 205 << 164  << 0 << endr
+           << 198.3  << 230.3 << 0 << endr;
+
+  C11= join_cols(C11, new_pnts);
+
+
+  Mat<double> C12;
+
+  C12.insert_rows(0, C11.row(3));
+  C12.insert_rows(1, C11.row(3));
+  C12.insert_rows(2, C11.row(3));
+
+  new_pnts << 186.8 << 230.3 << 0 << endr;
+
+
+  C12= join_cols(C12, new_pnts);
+
+
+  Mat<double> C13;
+
+  C13.insert_rows(0, C12.row(3));
+  C13.insert_rows(1, C12.row(3));
+  C13.insert_rows(2, C12.row(3));
+
+  new_pnts << 186.8 << 104 << 0 << endr;
+
+
+  C13= join_cols(C13, new_pnts);
+
+
+  Mat<double> C14;
+
+  C14.insert_rows(0, C13.row(3));
+  C14.insert_rows(1, C13.row(3));
+  C14.insert_rows(2, C13.row(3));
+
+  new_pnts << 198 << 104 << 0 << endr;
+
+
+  C14= join_cols(C14, new_pnts);
+
+
+  Mat<double> C15;
+
+  C15.insert_rows(0, C14.row(3));
+
+
+  new_pnts << 202 << 153 << 0 << endr
+           << 242 << 104.5 << 0 << endr
+	   << 310 << 104.5 << 0 << endr;
+    
+
+  C15= join_cols(C15, new_pnts);
+
+
   
   //open file to write data to
   std::ofstream datafile;
@@ -123,12 +206,20 @@ int main( int argc, char** argv)
   CPs.push_back( C6.t() );
   CPs.push_back( C7.t() );
   CPs.push_back( C8.t() );
+  CPs.push_back( C9.t() );
+  CPs.push_back( C10.t() );
+  CPs.push_back( C11.t() );
+  CPs.push_back( C12.t() );
+  CPs.push_back( C13.t() );
+  CPs.push_back( C14.t() );
+  CPs.push_back( C15.t() );
+
 
   for( std::vector< Mat<double> >::iterator i = CPs.begin();
        i != CPs.end() ; i++)
     {
   
-      for(double t = 0; t< 1 ; t+=0.01)    
+      for(double t = 0; t <= 1 ; t+=0.01)    
 	{
 	  
 	  //calculate the point
@@ -138,10 +229,14 @@ int main( int argc, char** argv)
 	  datafile << pnt(0) << "\t" << pnt(1) << "\t" << pnt(2) << std::endl;
 
 	  //write CPS to file 
-	  for( unsigned int col = 0; col < (*i).n_cols ; col++)
-	    CPfile << (*i)(0,col) << "\t" << (*i)(1,col) << "\t" << (*i)(2,col) << std::endl;
 	  
 	 }
+      
+      for( unsigned int col = 0; col < (*i).n_cols ; col++)
+	CPfile << (*i)(0,col) << "\t" << (*i)(1,col) << "\t" << (*i)(2,col) << std::endl;
+      
+      
+      CPfile << std::endl; 
 
     }
       
