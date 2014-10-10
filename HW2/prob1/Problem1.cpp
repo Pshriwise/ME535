@@ -19,7 +19,7 @@ int main( int argc, char** argv)
   //setup the first bezier curve
   Mat<double> C1;
   
-  new_pnts << 425 << 210 << 0 << endr
+  new_pnts << 426 << 210 << 0 << endr
            << 425 << 318.5 << 0 << endr
            << 227 << 329.5 << 0 << endr
            << 227 << 410 << 0 << endr;
@@ -183,6 +183,19 @@ int main( int argc, char** argv)
   C15= join_cols(C15, new_pnts);
 
 
+  Mat<double> C16;
+
+  C16.insert_rows(0, C15.row(3));
+
+
+  new_pnts << 363 << 104.5 << 0 << endr
+           << 425 << 133.5 << 0 << endr;
+
+    
+
+  C16= join_cols(C16, new_pnts);
+
+  C16.insert_rows( 3, C1.row(0) );
   
   //open file to write data to
   std::ofstream datafile;
@@ -213,6 +226,7 @@ int main( int argc, char** argv)
   CPs.push_back( C13.t() );
   CPs.push_back( C14.t() );
   CPs.push_back( C15.t() );
+  CPs.push_back( C16.t() );
 
 
   for( std::vector< Mat<double> >::iterator i = CPs.begin();
