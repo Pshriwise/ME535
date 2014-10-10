@@ -237,15 +237,16 @@ int main( int argc, char** argv)
 	{
 	  
 	  //calculate the point
-	  de_cast( t, *i, pnt, plot_dat);
+	  de_cast( t, (*i), pnt, plot_dat);
 	  
 	  //write point value to file 
 	  datafile << pnt(0) << "\t" << pnt(1) << "\t" << pnt(2) << std::endl;
 
-	  //write CPS to file 
+
 	  
 	 }
-      
+
+      //write CPS to file       
       for( unsigned int col = 0; col < (*i).n_cols ; col++)
 	CPfile << (*i)(0,col) << "\t" << (*i)(1,col) << "\t" << (*i)(2,col) << std::endl;
       
@@ -254,6 +255,71 @@ int main( int argc, char** argv)
 
     }
       
+
+  //now create the translation matrix 
+  Mat<double> A,B;
+    
+  A << 0 << 0 << 0 << endr
+    << 1 << 0 << 0 << endr
+    << 1 << 1 << 0 << endr
+    << 0 << 1 << 0 << endr; 
+  
+  A = A.t();
+
+  B << 0 << 0 << 0 << endr
+    << 1 << 0 << 0 << endr
+    << 2 << 1 << 0 << endr
+    << 1 << 1 << 0 << endr; 
+
+  B = B.t();
+
+
+
+  //shear matrix
+  Mat<double> T;
+  T << 1 << 0 << 0 << endr
+    << 1 << 1 << 0 << endr
+    << 0 << 0 << 1 << endr;
+  
+  T=T.t();
+  
+  std::ofstream CP_shear_file; 
+  CP_shear_file.open("CPs_shear.dat");
+
+  std::ofstream shear_datafile;
+  shear_datafile.open("S_curves_shear.dat");
+
+  for( std::vector< Mat<double> >::iterator i = CPs.begin();
+       i != CPs.end() ; i++)
+    {
+      //apply the shear transformation
+      *i = T*(*i);
+
+      for(double t = 0; t <= 1 ; t+=0.01)    
+	{
+	  
+
+	  //calculate the point
+	  de_cast( t, (*i), pnt, plot_dat);
+	  
+	  //write point value to file 
+	  shear_datafile << pnt(0) << "\t" << pnt(1) << "\t" << pnt(2) << std::endl;
+
+
+	  
+	 }
+
+      //write CPS to file       
+      for( unsigned int col = 0; col < (*i).n_cols ; col++)
+	CP_shear_file << (*i)(0,col) << "\t" << (*i)(1,col) << "\t" << (*i)(2,col) << std::endl;
+      
+      
+      CP_shear_file << std::endl; 
+
+    }
+      
+  
+  
 
   return 0;
 
