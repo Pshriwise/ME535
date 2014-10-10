@@ -273,35 +273,69 @@ int main( int argc, char** argv)
 
   B = B.t();
 
-
-
-  //shear matrix
+  //translation matrix
   Mat<double> T;
-  T << 1 << 0 << 0 << endr
-    << 1 << 1 << 0 << endr
+
+
+
+  T << 1 << 0 << 0 << -C13(3,0) << endr
+    << 0 << 1 << 0 << -C13(3,1) << endr
+    << 0 << 0 << 0 <<  0 << endr
+    << 0 << 0 << 0 << 1 << endr;
+   
+
+  //dummy matrix to tack onto CPs for the translation
+  Row<double> dum; 
+  dum << 1 << 1 << 1 << 1;
+
+
+  std::cout << T << std::endl;    
+  //shear matrix
+  Mat<double> S;
+  S << 1 << 1 << 0 << endr
+    << 0 << 1 << 0 << endr
     << 0 << 0 << 1 << endr;
   
-  T=T.t();
-  
-  std::ofstream CP_shear_file; 
-  CP_shear_file.open("CPs_shear.dat");
+
+
+  std::cout << T << std::endl; 
+
+
+  //open data files for the translated and sheared data
+  std::ofstream trans_datafile;
+  trans_datafile.open("S_curves_trans.dat");
 
   std::ofstream shear_datafile;
   shear_datafile.open("S_curves_shear.dat");
 
+
   for( std::vector< Mat<double> >::iterator i = CPs.begin();
        i != CPs.end() ; i++)
     {
+      
+      //translate matrix such that the lowxest x,y is now zero
+      //(see definition of translation matrix above)
+      Mat<double> trans_mat = *i;
+      trans_mat.insert_rows(3, dum); //insert dummy row of ones to get dimensions correct
+      trans_mat = T*trans_mat; //apply the translation matrix
+      trans_mat = trans_mat.submat(0,0,2,3);
+      
+      
       //apply the shear transformation
-      *i = T*(*i);
+      Mat<double> shear_mat = S*trans_mat;
 
       for(double t = 0; t <= 1 ; t+=0.01)    
 	{
 	  
 
-	  //calculate the point
-	  de_cast( t, (*i), pnt, plot_dat);
-	  
+	  //calculate the translated point
+	  de_cast( t, trans_mat, pnt, plot_dat);
+
+  	  //write point value to file 
+	  trans_datafile << pnt(0) << "\t" << pnt(1) << "\t" << pnt(2) << std::endl;
+
+	  de_cast( t, shear_mat, pnt, plot_dat);
+
 	  //write point value to file 
 	  shear_datafile << pnt(0) << "\t" << pnt(1) << "\t" << pnt(2) << std::endl;
 
@@ -309,18 +343,8 @@ int main( int argc, char** argv)
 	  
 	 }
 
-      //write CPS to file       
-      for( unsigned int col = 0; col < (*i).n_cols ; col++)
-	CP_shear_file << (*i)(0,col) << "\t" << (*i)(1,col) << "\t" << (*i)(2,col) << std::endl;
-      
-      
-      CP_shear_file << std::endl; 
-
     }
       
-  
-  
-
   return 0;
 
 }
