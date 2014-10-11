@@ -27,6 +27,7 @@ int main( int argc, char** argv)
   CPs << 0 << 0 << 0 << endr
       << 1 << 0 << 0 << endr
       << 1 << 1 << 0 << endr
+      << 0 << 1 << 0 << endr
       << 0 << 2 << 0 << endr
       << 2 << 2 << 0 << endr;
 
@@ -36,11 +37,26 @@ int main( int argc, char** argv)
 
   Mat<double> pnt;
   
-  blossom_de_boor( 3, CPs, knots, 1, pnt);
+  int degree = 3;
+  double start = knots[degree-1];
+  double end = knots[knots.size()-(degree)];
 
+  std::ofstream datafile;
+  datafile.open("BSpline.dat");
+  
+ 
+  for( double u = start; u <= end; u+=(end-start)/100 )
+    {
+      blossom_de_boor( degree, CPs, knots, u, pnt);
+      datafile << pnt(0) << "\t" << pnt(1) <<  "\t" << pnt(2) << std::endl; 
 
+    }
 
-  std::cout << pnt << std::endl; 
+  datafile.close();
+  std::ofstream CPfile; 
+  CPfile.open("CP.dat");
+  CPfile << CPs.t();
+  CPfile.close();
 
 
 
@@ -55,7 +71,7 @@ void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, do
 
 
   //make sure the u-value is valid
-  if( u < knots[degree-1] || u > knots[ knots.size() - (degree-1)] )
+  if( u < knots[degree-1] || u > knots[ knots.size() - (degree)] )
     {
       std::cout << "Invalid u-value passed to blossom_de_boor" << std::endl; 
       assert(false);
@@ -79,7 +95,7 @@ void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, do
 
   Mat<double> base; 
 
-  base = cps.submat(0, interval, 2,interval+degree);
+  base = cps.submat(0, interval, 2, interval+(degree));
   
   std::vector<double>sub_knots; 
   sub_knots.insert(sub_knots.begin(), knots.begin()+interval, knots.begin()+interval+(degree*2) );
