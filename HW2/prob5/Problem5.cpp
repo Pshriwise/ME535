@@ -13,7 +13,7 @@ void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, do
 void find_pnt( Mat<double> base, std::vector<double> knots, Mat<double> &pnt, double u );
 
 
-void find_slope( Mat<double> base, std::vector<double> knots, Mat<double> deriv, double u);
+void find_slope( Mat<double> base, std::vector<double> knots, Mat<double> &deriv, double u);
 
 int main( int argc, char** argv)
 {
@@ -63,6 +63,13 @@ int main( int argc, char** argv)
   part_header("B");
   
   double t = 3;
+
+  std::cout << "The point of the B-Spline at t= " << t << ":" << std::endl; 
+
+  blossom_de_boor(degree, CPs, knots, t, pnt);
+
+  std::cout << pnt << std::endl; 
+
   std::cout << "The derivative of the B-Spline at t= " << t << ":" << std::endl; 
 
   blossom_de_boor(degree, CPs, knots, t, pnt, true);
@@ -157,7 +164,7 @@ void find_pnt( Mat<double> base, std::vector<double> knots, Mat<double> &pnt, do
 }
       
       
-void find_slope( Mat<double> base, std::vector<double> knots, Mat<double> deriv, double u)
+void find_slope( Mat<double> base, std::vector<double> knots, Mat<double> &deriv, double u)
 {
 
   if ( 2 == base.n_cols ) 
