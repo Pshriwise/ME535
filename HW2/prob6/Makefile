@@ -8,4 +8,4 @@ build:
 
 clean:
 
-	rm -f Problem5 *~ *#
+	rm -f Problem6 *~ *#
