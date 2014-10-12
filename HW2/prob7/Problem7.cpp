@@ -45,11 +45,22 @@ int main( int argc, char** argv)
   std::ofstream datafile;
   datafile.open("BSpline.dat");
   
- 
-  for( double u = start; u <= end; u+=(end-start)/100 )
+  double y_max, y_min;
+  bool first = true;
+
+  for( double u = start; u <= end; u+=(end-start)/1000 )
     {
+
       blossom_de_boor( degree, CPs, knots, u, pnt);
       datafile << pnt(0) << "\t" << pnt(1) <<  "\t" << pnt(2) << std::endl; 
+
+
+      //check for new y_max
+      if( first || pnt(1) > y_max ) y_max = pnt(1);
+      //check for new y_min
+      if( first || pnt(1) < y_min ) y_min = pnt(1);
+
+      first = false;
     }
 
   datafile.close();
@@ -58,21 +69,14 @@ int main( int argc, char** argv)
   CPfile << CPs.t();
   CPfile.close();
 
-  part_header("B");
-  
-  double t = 3;
+  //calculate the number of layers needed 
+  double thickness = 0.1;
+  int layers = ceil((y_max-y_min)/thickness);
 
-  std::cout << "The point of the B-Spline at t= " << t << ":" << std::endl; 
+  std::cout << "The number of layers required to make this part is: " << layers << std::endl; 
 
-  blossom_de_boor(degree, CPs, knots, t, pnt);
 
-  std::cout << pnt << std::endl; 
 
-  std::cout << "The derivative of the B-Spline at t= " << t << ":" << std::endl; 
-
-  blossom_de_boor(degree, CPs, knots, t, pnt, true);
-
-  std::cout << pnt << std::endl; 
 
 
   return 0;
