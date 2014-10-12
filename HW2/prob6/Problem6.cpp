@@ -23,6 +23,9 @@ int main( int argc, char** argv)
   std::vector<double> knots( k, k+ (sizeof(k)/sizeof(k[0]) ) );
 
 
+  double corner_w = cos(M_PI/3); 
+
+  double w [] = { 1, corner_w, 1, corner_w, 1, corner_w, 1};
   Mat<double> CPs;
   
   CPs << cos(M_PI/6)  << sin(M_PI/6) << 0 << endr //0
@@ -34,10 +37,24 @@ int main( int argc, char** argv)
       << cos(M_PI/6)    << sin(M_PI/6) << 0 << endr; //6
 
 
+  std::ofstream CPfile; 
+  CPfile.open("CP.dat");
+  CPfile << CPs;
+  CPfile.close();
+
+
+  //apply weights
+  for (unsigned int i= 0; i < CPs.n_rows; i++)
+    {
+      CPs.row(i) = w[i]*CPs.row(i);
+      CPs(i, (CPs.n_cols-1) ) = w[i];
+
+    }
+
   CPs=CPs.t();
   
 
-  std::cout << CPs << std::endl; 
+
 
   Mat<double> pnt;
   
@@ -51,15 +68,12 @@ int main( int argc, char** argv)
 
   for( double u = start; u <= end; u+=(end-start)/100 )
     {
+  
       blossom_de_boor( degree, CPs, knots, u, pnt);
-      datafile << pnt(0) << "\t" << pnt(1) <<  "\t" << pnt(2) << std::endl; 
+      datafile << pnt(0)/pnt(2) << "\t" << pnt(1)/pnt(2) <<  "\t" << pnt(2) << std::endl; 
     }
 
   datafile.close();
-  std::ofstream CPfile; 
-  CPfile.open("CP.dat");
-  CPfile << CPs.t();
-  CPfile.close();
 
   part_header("B");
   
@@ -70,6 +84,21 @@ int main( int argc, char** argv)
   blossom_de_boor(degree, CPs, knots, t, pnt);
 
   std::cout << pnt << std::endl; 
+
+
+  //create a circle for comparison
+
+  std::ofstream testdata;
+  testdata.open("Unit_Circ.dat");
+
+
+  for(double theta = 0; theta <= 2*M_PI; theta+= (2*M_PI)/15 )
+    {
+      
+      testdata << cos(theta) << "\t" << sin(theta) << "\t" << std::endl;
+
+
+    }
 
 
   return 0;
