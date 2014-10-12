@@ -35,7 +35,7 @@ void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, do
 
   Mat<double> base; 
 
-  base = cps.submat(0, interval, 2, interval+(degree));
+  base = cps.cols(interval, interval+(degree));
   
   std::vector<double>sub_knots; 
   sub_knots.insert(sub_knots.begin(), knots.begin()+interval, knots.begin()+interval+(degree*2) );
@@ -65,7 +65,7 @@ void find_pnt( Mat<double> base, std::vector<double> knots, Mat<double> &pnt, do
   int offset = base.n_cols-1; 
 
 
-  Mat<double> new_base(3,offset);
+  Mat<double> new_base(base.n_rows,offset);
 
 
   for( unsigned int i = 0 ; i < offset ; i ++)
@@ -99,7 +99,7 @@ void find_slope( Mat<double> base, std::vector<double> knots, Mat<double> &deriv
   int offset = base.n_cols-1; 
 
 
-  Mat<double> new_base(3,offset);
+  Mat<double> new_base(base.n_rows,offset);
 
 
   for( unsigned int i = 0 ; i < offset ; i ++)
