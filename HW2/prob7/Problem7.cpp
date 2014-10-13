@@ -92,8 +92,9 @@ int main( int argc, char** argv)
   std::ofstream boxfile; 
   boxfile.open("boxes.dat");
 
-
-  for(double this_y = y_max - thickness; this_y >= y_min; this_y-=thickness )
+  double this_y = y_max - thickness;
+  double prev_y = y_max;
+  while( this_y >= y_min)
     {
 
       //find all x points for this y value
@@ -114,8 +115,31 @@ int main( int argc, char** argv)
       box.clear();
       x_pnts.clear();
   
+      prev_y = this_y; 
+      this_y -= thickness; 
       
     }
+
+  //make one more box to wrap it up 
+
+  assert( prev_y - y_min < thickness);
+
+  this_y = (prev_y+y_min)/2;
+
+
+  find_x_pnts( this_y, curve_pnts, x_pnts);
+
+  assert( 2 == x_pnts.size() );
+  
+  //create our box
+  box << x_pnts[0] << y_min << endr
+      << x_pnts[0] << prev_y << endr
+      << x_pnts[1] << prev_y << endr
+      << x_pnts[1] << y_min << endr; 
+
+  boxfile << box << std::endl; 
+
+  
   boxfile.close();
 
   return 0;
