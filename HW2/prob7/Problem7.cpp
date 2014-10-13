@@ -157,7 +157,7 @@ void find_x_pnts( double y, Mat<double> pnts, std::vector<double> &xs )
       double x; 
       //check for y intersection with this line
       double u = (y-pnts(1,i))/(pnts(1,i+1)-pnts(1,i));
-      std::cout << u << std::endl; 
+
       if( 0 < u && 1 > u ) 
 	{
 	  //calculate the x point 
