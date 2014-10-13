@@ -62,11 +62,16 @@ int main( int argc, char** argv)
   
   double t = 1.5;
 
+  std::ofstream pntfile;
+  pntfile.open("pnt.dat");
+
   std::cout << "The point of the B-Spline at t= " << t << ":" << std::endl; 
 
   blossom_de_boor(degree, CPs, knots, t, pnt);
 
   std::cout << pnt << std::endl; 
+
+  pntfile << pnt.t() << std::endl; 
 
   return 0;
 
