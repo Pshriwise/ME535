@@ -9,6 +9,14 @@
 
 using namespace arma;
 
+void find_x_pnts( double y, Mat<double> pnts, std::vector<double> &xs );
+
+
+bool dbl_comp( double a, double b, double delta)
+{
+  return fabs(b-a) < delta;
+}
+
 
 int main( int argc, char** argv)
 {
@@ -47,13 +55,14 @@ int main( int argc, char** argv)
   
   double y_max, y_min;
   bool first = true;
-
+  Mat<double>curve_pnts;
+  int i = 0;
   for( double u = start; u <= end; u+=(end-start)/1000 )
     {
 
       blossom_de_boor( degree, CPs, knots, u, pnt);
       datafile << pnt(0) << "\t" << pnt(1) <<  "\t" << pnt(2) << std::endl; 
-
+      curve_pnts = join_rows(curve_pnts, pnt);
 
       //check for new y_max
       if( first || pnt(1) > y_max ) y_max = pnt(1);
@@ -76,12 +85,65 @@ int main( int argc, char** argv)
   std::cout << "The number of layers required to make this part is: " << layers << std::endl; 
 
 
+  //now create the boxes as needed
+  std::vector<double> x_pnts;
+  Mat<double> box;
+
+  std::ofstream boxfile; 
+  boxfile.open("boxes.dat");
 
 
+  for(double this_y = y_max - thickness; this_y >= y_min; this_y-=thickness )
+    {
+
+      //find all x points for this y value
+      find_x_pnts( this_y, curve_pnts, x_pnts);
+
+      assert( 2 == x_pnts.size() );
+
+      //create our box
+      box << x_pnts[0] << this_y << endr
+	  << x_pnts[0] << this_y+thickness << endr
+	  << x_pnts[1] << this_y+thickness << endr
+	  << x_pnts[1] << this_y << endr; 
+
+      //box.insert_rows(box.n_rows-1, box.row(0));
+      
+      boxfile << box << std::endl; 
+
+      box.clear();
+      x_pnts.clear();
+  
+      
+    }
+  boxfile.close();
 
   return 0;
+
 
 }
 
 
- 
+void find_x_pnts( double y, Mat<double> pnts, std::vector<double> &xs )
+{
+
+  //loop through curve points and check for intersections 
+  for( unsigned int i = 0; i < pnts.n_cols-1; i++)
+    {
+      double x; 
+      //check for y intersection with this line
+      double u = (y-pnts(1,i))/(pnts(1,i+1)-pnts(1,i));
+      std::cout << u << std::endl; 
+      if( 0 < u && 1 > u ) 
+	{
+	  //calculate the x point 
+	  x = ((pnts(0,i+1)-pnts(0,i))*u) + pnts(0,i);
+	  xs.push_back(x);
+	}
+	  
+
+
+    }
+  
+}
+
