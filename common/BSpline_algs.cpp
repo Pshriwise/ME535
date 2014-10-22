@@ -6,6 +6,42 @@
 
 using namespace arma;
 
+void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<double> knots_u, std::vector<double> knots_v, double u, double v, Mat<double> &pnt )
+{
+
+
+  //make sure that our matrix has a number of rows that is dvisible by 3
+  assert ( 0 == cps.n_rows % 3 );
+
+  //first we'll reduce the v direction
+  Mat<double> u_pnts(0,0);
+  Mat<double> v_pnts;//(cps(0,0).size(), cps.n_rows );
+  
+  for( unsigned int i = 0; i < cps.n_cols; i++)
+    {
+      
+      //use the all vectors of this column to make the new matrix of v_pnts
+      for(unsigned int j=0; j<cps.n_rows; j++) v_pnts.insert_cols( j, cps(j,i) );
+      
+      //now send this off to blossom_de_boor and add the returned point onto the u_pnts
+      Mat<double> v_pnt;
+      blossom_de_boor( degree_v, v_pnts, knots_v, v, v_pnt, false);
+
+      u_pnts.insert_cols(u_pnts.n_cols, v_pnt.col(0));
+
+      //reset these for the next round
+      v_pnt.clear();
+      v_pnts.clear();
+    }
+  
+  //now we'll do a reduction in u as we normally do, but with the new u cps
+  
+  std::cout << u_pnts << std::endl; 
+  blossom_de_boor( degree_u, u_pnts, knots_u, u, pnt, false);
+
+  
+}
+
 void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, double u, Mat<double> &pnt, bool deriv )
 {
 
