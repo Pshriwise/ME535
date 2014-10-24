@@ -32,14 +32,13 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
   
   //now we'll do a reduction in u as we normally do, but with the new u cps
   
-  //std::cout << u_pnts << std::endl; 
+  
   blossom_de_boor( degree_u, u_pnts, knots_u, u, pnt, true);
-
   
 }
 
 
-void set_bspline_params( int degree, Mat<double> cps, std::vector<double> knots, double u, Mat<double> &base, std::vector<double> &sub_knots )
+void setup_params( int degree, Mat<double> cps, std::vector<double> knots, double u, Mat<double> &base, std::vector<double> &sub_knots )
 {
   
   base.clear();
@@ -78,7 +77,7 @@ void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, do
   Mat<double> base; 
   std::vector<double> sub_knots; 
 
-  set_bspline_params( degree, cps, knots, u, base, sub_knots);
+  setup_params( degree, cps, knots, u, base, sub_knots);
 
   if(deriv)
     {
