@@ -33,15 +33,17 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
   //now we'll do a reduction in u as we normally do, but with the new u cps
   
   //std::cout << u_pnts << std::endl; 
-  blossom_de_boor( degree_u, u_pnts, knots_u, u, pnt, false);
+  blossom_de_boor( degree_u, u_pnts, knots_u, u, pnt, true);
 
   
 }
 
-void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, double u, Mat<double> &pnt, bool deriv )
+
+void set_bspline_params( int degree, Mat<double> cps, std::vector<double> knots, double u, Mat<double> &base, std::vector<double> &sub_knots )
 {
-
-
+  
+  base.clear();
+  sub_knots.clear();
   //make sure the u-value is valid
   if( u < knots[degree-1] || u > knots[ knots.size() - (degree)] )
     {
@@ -61,27 +63,33 @@ void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, do
 	}
       
     }
-  
-  
+   
   assert( 0 <= interval );
-
-  Mat<double> base; 
 
   base = cps.cols(interval, interval+(degree));
   
-  std::vector<double>sub_knots; 
   sub_knots.insert(sub_knots.begin(), knots.begin()+interval, knots.begin()+interval+(degree*2) );
 
+}
+
+void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, double u, Mat<double> &pnt, bool deriv )
+{
+
+  Mat<double> base; 
+  std::vector<double> sub_knots; 
+
+  set_bspline_params( degree, cps, knots, u, base, sub_knots);
 
   if(deriv)
     {
       find_slope(base, sub_knots, pnt, u);
-      pnt= degree*pnt;
+      pnt = (degree/(sub_knots[1]-sub_knots[0]))*(pnt.col(1)-pnt.col(0));
     }
   else
     {
       find_pnt( base, sub_knots, pnt, u);
     }
+
 }
 
 
@@ -120,12 +128,12 @@ void find_pnt( Mat<double> base, std::vector<double> knots, Mat<double> &pnt, do
 }
       
       
-void find_slope( Mat<double> base, std::vector<double> knots, Mat<double> &deriv, double u)
+void find_slope( Mat<double> base, std::vector<double> &knots, Mat<double> &deriv_pnts, double u)
 {
 
   if ( 2 == base.n_cols ) 
     {
-      deriv = (1/(knots[1]-knots[0]))*(base.col(1)-base.col(0));
+      deriv_pnts = base;
       return;
     }
   int offset = base.n_cols-1; 
@@ -147,8 +155,8 @@ void find_slope( Mat<double> base, std::vector<double> knots, Mat<double> &deriv
   //remove the fisrt and last knot before the recursive call 
   std::vector<double> new_knots;
   new_knots.insert(new_knots.begin(), knots.begin()+1, knots.end()-1);
+  knots = new_knots;
 
-
-  find_slope(new_base, new_knots, deriv, u);
+  find_slope(new_base, knots, deriv_pnts, u);
 
 }

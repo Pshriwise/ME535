@@ -12,4 +12,4 @@ void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, do
 void find_pnt( Mat<double> base, std::vector<double> knots, Mat<double> &pnt, double u );
 
 
-void find_slope( Mat<double> base, std::vector<double> knots, Mat<double> &deriv, double u);
+void find_slope( Mat<double> base, std::vector<double> &knots, Mat<double> &deriv_pnts, double u);
