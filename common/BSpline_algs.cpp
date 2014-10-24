@@ -77,6 +77,7 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
 
   switch(calc_type){
   case PNT: 
+    {
     field<vec> tmp(2,1);
     //reduce in both directions 
     //u first 
@@ -86,6 +87,41 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
     //now v
     double v_interpolant = (sub_knots_v[1] - v)/(sub_knots_v[1]-sub_knots_v[0]);
     for ( unsigned int i = 0 ; i < tmp.n_cols; i ++) value.insert_cols(0, v_interpolant*tmp(0,i) + (1-v_interpolant)*tmp(1,i));
+    }
+    break; 
+  case DERIV_U:
+    {
+    field<vec> tmp(1,2); 
+      
+    //reduce in v
+    double v_interpolant = (sub_knots_v[1] - v)/(sub_knots_v[1]-sub_knots_v[0]);
+    for ( unsigned int i = 0 ; i < tbt.n_cols; i ++) tmp(0,1) =  v_interpolant*tmp(0,i) + (1-v_interpolant)*tbt(1,i);
+    
+    //calculate derivative
+    value = degree_u*(tmp(0,1)-tmp(0,0))/(sub_knots_u[1]-sub_knots_u[0]);
+    }
+    break; 
+
+  case DERIV_V:
+    {
+    field<vec> tmp(2,1);
+
+    //reduce in u
+    double u_interpolant = (sub_knots_u[1] - u)/(sub_knots_u[1]-sub_knots_u[0]);
+    for ( unsigned int i = 0 ; i < tbt.n_rows; i++) tmp(i,0) = ( u_interpolant*tbt(i,0) + (1-u_interpolant)*tbt(i,1) ); 
+
+    //calculate derivative
+    value = degree_v*(tmp(0,1)-tmp(0,0))/(sub_knots_v[1]-sub_knots_v[0]); 
+    }
+    break; 
+   
+  case DERIV_UV:
+
+    //this gets messy... 
+    value = (degree_v*degree_u)*( ( (tbt(1,1)-tbt(0,1))/(sub_knots_v[1]-sub_knots_v[0]) )- ( (tbt(0,1)-tbt(0,0))/(sub_knots_v[1]-sub_knots_v[0]) )) / (sub_knots_u[1]-sub_knots_u[0]);
+
+
+
   }
 
   
