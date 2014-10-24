@@ -58,7 +58,7 @@ int main( int argc, char** argv)
     for( double v = 0 ; v<=1 ; v+=0.01)
       {
 	{
-	  surf_de_boor( u_deg, v_deg, CPS, knots_u, knots_v, u, v, pnt);
+	  surf_de_boor( u_deg, v_deg, CPS, knots_u, knots_v, u, v, pnt, PNT);
 	  //remove weight
 	  pnt.col(0) = pnt.col(0)/pnt(3);
 	  Surf.insert_cols(Surf.n_cols,pnt.col(0));
