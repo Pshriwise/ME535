@@ -82,58 +82,26 @@ void blossom_de_boor( int degree, Mat<double> cps, std::vector<double> knots, do
 
   if(deriv)
     {
-      find_slope(base, sub_knots, pnt, u);
+      find_pnts(base, sub_knots, pnt, u, 2);
       pnt = (degree/(sub_knots[1]-sub_knots[0]))*(pnt.col(1)-pnt.col(0));
     }
   else
     {
-      find_pnt( base, sub_knots, pnt, u);
+      find_pnts( base, sub_knots, pnt, u, 1);
     }
 
 }
 
 
-void find_pnt( Mat<double> base, std::vector<double> knots, Mat<double> &pnt, double u )
+void find_pnts( Mat<double> base, std::vector<double> &knots, Mat<double> &pnt, double u, int num_pnts )
 {
 
+  assert( 0 < num_pnts && num_pnts <= base.n_cols );
 
-  if ( 1 == base.n_cols ) 
+  if ( num_pnts == base.n_cols ) 
     {
-      pnt = base.col(0);
-      return;
-    }
-  int offset = base.n_cols-1; 
+      pnt = base;
 
-
-  Mat<double> new_base(base.n_rows,offset);
-
-
-  for( unsigned int i = 0 ; i < offset ; i ++)
-    {
-      double coeff1 = (double(knots[i+offset])-u)/double(knots[i+offset]-knots[i]);
-
-      double coeff2 = (u - double(knots[i]))/double(knots[i+offset]-knots[i]);
-
-      new_base.col(i)= coeff1*base.col(i) + coeff2*base.col(i+1);
-
-    }
-      
-  //remove the fisrt and last knot before the recursive call 
-  std::vector<double> new_knots;
-  new_knots.insert(new_knots.begin(), knots.begin()+1, knots.end()-1);
-
-
-  find_pnt(new_base, new_knots, pnt, u);
-
-}
-      
-      
-void find_slope( Mat<double> base, std::vector<double> &knots, Mat<double> &deriv_pnts, double u)
-{
-
-  if ( 2 == base.n_cols ) 
-    {
-      deriv_pnts = base;
       return;
     }
   int offset = base.n_cols-1; 
@@ -157,6 +125,7 @@ void find_slope( Mat<double> base, std::vector<double> &knots, Mat<double> &deri
   new_knots.insert(new_knots.begin(), knots.begin()+1, knots.end()-1);
   knots = new_knots;
 
-  find_slope(new_base, knots, deriv_pnts, u);
+  find_pnts(new_base, knots, pnt, u, num_pnts);
 
 }
+      
