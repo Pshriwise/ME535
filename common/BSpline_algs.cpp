@@ -191,6 +191,8 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
 	value-= wv*pu; 
 	value/=w;
 
+	std::cout << "This code may still need some work, use this answer with caution!!" << std::endl; 
+
       }
 
   }
