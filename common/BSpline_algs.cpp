@@ -164,7 +164,34 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
     //this gets messy... 
     value = (degree_v*degree_u)*( ( (tbt(1,1)-tbt(0,1))/(sub_knots_v[1]-sub_knots_v[0]) )- ( (tbt(0,1)-tbt(0,0))/(sub_knots_v[1]-sub_knots_v[0]) )) / (sub_knots_u[1]-sub_knots_u[0]);
 
+    if(nurbs)
+      {
+	A_prime = value.submat(0,0,value.n_rows-2,0); 
+	
+	double w_uv = value(value.n_rows-1,0);
+	
+	surf_de_boor( degree_u, degree_v, cps, knots_u, knots_v, u, v, pw, PNT);
+	w = pw(pw.n_rows-1,0);
+	p = pw.submat(0,0,pw.n_rows-2,0)/w;
 
+	value = A_prime - w_uv*p;
+
+	Mat<double> pu, pv; 
+	double wu, wv; 
+	
+	surf_de_boor( degree_u, degree_v, cps, knots_u, knots_v, u, v, pu, DERIV_U);
+	wu = pu(pu.n_rows-1);
+	surf_de_boor( degree_u, degree_v, cps, knots_u, knots_v, u, v, pu, DERIV_U, true);
+
+	surf_de_boor( degree_u, degree_v, cps, knots_u, knots_v, u, v, pv, DERIV_V);
+	wv = pu(pu.n_rows-1);
+	surf_de_boor( degree_u, degree_v, cps, knots_u, knots_v, u, v, pv, DERIV_V, true);
+       
+	value-= wu*pv;
+	value-= wv*pu; 
+	value/=w;
+
+      }
 
   }
 
