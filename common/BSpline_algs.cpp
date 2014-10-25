@@ -6,7 +6,7 @@
 
 using namespace arma;
 
-void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<double> knots_u, std::vector<double> knots_v, double u, double v, Mat<double> &value, int calc_type )
+void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<double> knots_u, std::vector<double> knots_v, double u, double v, Mat<double> &value, int calc_type, bool nurbs )
 {
 
   //first we'll reduce the v direction
@@ -75,43 +75,60 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
   std::cout << tbt << std::endl; 
   //now calculate what we want from this two by two matrix 
 
+    field<vec> tmp(2,2);
+    double u_interpolant = (sub_knots_u[1] - u)/(sub_knots_u[1]-sub_knots_u[0]);
+    double v_interpolant = (sub_knots_v[1] - v)/(sub_knots_v[1]-sub_knots_v[0]);
+
   switch(calc_type){
+    //field<vec> tmp(2,2);
+    //double u_interpolant = (sub_knots_u[1] - u)/(sub_knots_u[1]-sub_knots_u[0]);
+    //double v_interpolant = (sub_knots_v[1] - v)/(sub_knots_v[1]-sub_knots_v[0]);
   case PNT: 
     {
-    field<vec> tmp(2,1);
-    //reduce in both directions 
-    //u first 
-    double u_interpolant = (sub_knots_u[1] - u)/(sub_knots_u[1]-sub_knots_u[0]);
-    for ( unsigned int i = 0 ; i < tbt.n_rows; i++) tmp(i,0) = ( u_interpolant*tbt(i,0) + (1-u_interpolant)*tbt(i,1) ); 
+      tmp.set_size(2,1);
+      //reduce in both directions 
+      //u first 
+      for ( unsigned int i = 0 ; i < tbt.n_rows; i++) tmp(i,0) = ( u_interpolant*tbt(i,0) + (1-u_interpolant)*tbt(i,1) ); 
 
-    //now v
-    double v_interpolant = (sub_knots_v[1] - v)/(sub_knots_v[1]-sub_knots_v[0]);
-    for ( unsigned int i = 0 ; i < tmp.n_cols; i ++) value.insert_cols(0, v_interpolant*tmp(0,i) + (1-v_interpolant)*tmp(1,i));
+      //now v
+      for ( unsigned int i = 0 ; i < tmp.n_cols; i ++) value.insert_cols(0, v_interpolant*tmp(0,i) + (1-v_interpolant)*tmp(1,i));
     }
     break; 
   case DERIV_U:
     {
-    field<vec> tmp(1,2); 
+      tmp.set_size(1,2);
+      //reduce in v
+      for ( unsigned int i = 0 ; i < tbt.n_cols; i ++) tmp(0,1) =  v_interpolant*tmp(0,i) + (1-v_interpolant)*tbt(1,i);
       
-    //reduce in v
-    double v_interpolant = (sub_knots_v[1] - v)/(sub_knots_v[1]-sub_knots_v[0]);
-    for ( unsigned int i = 0 ; i < tbt.n_cols; i ++) tmp(0,1) =  v_interpolant*tmp(0,i) + (1-v_interpolant)*tbt(1,i);
-    
-    //calculate derivative
-    value = degree_u*(tmp(0,1)-tmp(0,0))/(sub_knots_u[1]-sub_knots_u[0]);
+      //calculate derivative
+      value = degree_u*(tmp(0,1)-tmp(0,0))/(sub_knots_u[1]-sub_knots_u[0]);
     }
     break; 
 
   case DERIV_V:
     {
-    field<vec> tmp(2,1);
+      tmp.set_size(2,1);
+      //reduce in u
+      for ( unsigned int i = 0 ; i < tbt.n_rows; i++) tmp(i,0) = ( u_interpolant*tbt(i,0) + (1-u_interpolant)*tbt(i,1) ); 
 
-    //reduce in u
-    double u_interpolant = (sub_knots_u[1] - u)/(sub_knots_u[1]-sub_knots_u[0]);
-    for ( unsigned int i = 0 ; i < tbt.n_rows; i++) tmp(i,0) = ( u_interpolant*tbt(i,0) + (1-u_interpolant)*tbt(i,1) ); 
+      //calculate derivative in v
+      value = degree_v*(tmp(1,0)-tmp(0,0))/(sub_knots_v[1]-sub_knots_v[0]);
 
-    //calculate derivative
-    value = degree_v*(tmp(0,1)-tmp(0,0))/(sub_knots_v[1]-sub_knots_v[0]); 
+      //if this is a nurbs curve, we need to adjust the value of the derivative according to the weights
+      if(nurbs)
+	{
+	  //get the weighted point
+	  Mat<double> pw;
+	  surf_de_boor( degree_u, degree_v, cps, knots_u, knots_v, u, v, pw, PNT);
+	  //set our weights
+	  double w_prime = value(value.n_rows-1,0);
+	  double w = pw(pw.n_rows-1,0); 
+	  Mat<double> p = pw.submat(0,0,pw.n_rows-2,0)/w;
+	  Mat<double> A_prime = value.submat(0,0,value.n_rows-2,0);
+
+	  //reset value to the correct derivative
+	  value = (A_prime - w_prime*p)/w;
+	}
     }
     break; 
    
