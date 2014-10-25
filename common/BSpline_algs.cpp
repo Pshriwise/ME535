@@ -97,6 +97,13 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
 
       //now v
       for ( unsigned int i = 0 ; i < tmp.n_cols; i ++) value.insert_cols(0, v_interpolant*tmp(0,i) + (1-v_interpolant)*tmp(1,i));
+      
+      if(nurbs)
+	{
+	  w = value(value.n_rows-1,0); 
+	  pw = value.submat(0,0,value.n_rows-2,0);
+	  value = pw/w; 
+	}
     }
     break; 
   case DERIV_U:
