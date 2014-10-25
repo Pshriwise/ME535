@@ -74,10 +74,15 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
 
   std::cout << tbt << std::endl; 
   //now calculate what we want from this two by two matrix 
-
-    field<vec> tmp(2,2);
-    double u_interpolant = (sub_knots_u[1] - u)/(sub_knots_u[1]-sub_knots_u[0]);
-    double v_interpolant = (sub_knots_v[1] - v)/(sub_knots_v[1]-sub_knots_v[0]);
+  
+  //values and structures needed for almost every calc
+  field<vec> tmp(2,2);
+  double u_interpolant = (sub_knots_u[1] - u)/(sub_knots_u[1]-sub_knots_u[0]);
+  double v_interpolant = (sub_knots_v[1] - v)/(sub_knots_v[1]-sub_knots_v[0]);
+  
+  //variables needed for proper nurbs calculations
+  Mat<double> pw, p, A_prime;
+  double w, w_prime;
 
   switch(calc_type){
     //field<vec> tmp(2,2);
@@ -118,13 +123,12 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
       if(nurbs)
 	{
 	  //get the weighted point
-	  Mat<double> pw;
 	  surf_de_boor( degree_u, degree_v, cps, knots_u, knots_v, u, v, pw, PNT);
 	  //set our weights
-	  double w_prime = value(value.n_rows-1,0);
-	  double w = pw(pw.n_rows-1,0); 
-	  Mat<double> p = pw.submat(0,0,pw.n_rows-2,0)/w;
-	  Mat<double> A_prime = value.submat(0,0,value.n_rows-2,0);
+	  w_prime = value(value.n_rows-1,0);
+	  w = pw(pw.n_rows-1,0); 
+	  p = pw.submat(0,0,pw.n_rows-2,0)/w;
+	  A_prime = value.submat(0,0,value.n_rows-2,0);
 
 	  //reset value to the correct derivative
 	  value = (A_prime - w_prime*p)/w;
