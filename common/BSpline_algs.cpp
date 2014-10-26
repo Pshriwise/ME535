@@ -214,7 +214,7 @@ void setup_params( int degree, Mat<double> cps, std::vector<double> knots, doubl
   for( unsigned int i = 0 ; i < knots.size()-1 ; i ++ ) 
     {
       
-      if( u >= knots[i] && u < knots[i+1] )
+      if( u >= knots[i] && u <= knots[i+1] && knots[i] != knots[i+1] )
 	{
 	  interval= i-(degree-1);
 	  break;
