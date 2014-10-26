@@ -124,6 +124,9 @@ int main( int argc, char** argv)
       surf.insert_rows(surf.n_rows, coons_value( func_ptrs, u, v)); 
     }}
 
+  std::cout << "The value of the Coons surface at u=v=0.5 is" << std::endl; 
+
+  std::cout << coons_value( func_ptrs, 0.5, 0.5) << std::endl; 
 
   std::ofstream datafile1; 
   datafile1.open("Coons_data.dat"); 
@@ -131,7 +134,6 @@ int main( int argc, char** argv)
   datafile1 << surf;
 
   datafile1.close(); 
-
 
   return 0;
 
