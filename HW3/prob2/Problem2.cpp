@@ -34,7 +34,7 @@ int main( int argc, char** argv)
   CPS(1,1) << 1 << 1 << 1 << 1;
   CPS(1,2) << 0 << 1 << 1 << 1;
 
-  std::cout << CPS << std::endl; 
+  //std::cout << CPS << std::endl; 
 
   //apply weights
 
@@ -44,9 +44,9 @@ int main( int argc, char** argv)
       CPS(1,i) *= weights[i];
     }
 
-  std::cout << CPS << std::endl; 
+  //std::cout << CPS << std::endl; 
 
-  std::cout << CPS(0,0).size() << std::endl; 
+  //std::cout << CPS(0,0).size() << std::endl; 
 
   Mat<double> pnt;
   
@@ -64,7 +64,15 @@ int main( int argc, char** argv)
 	  Surf.insert_cols(Surf.n_cols,pnt.col(0));
 	}
       }
-  //std::cout << pnt << std::endl; 
+  pnt.clear();
+  surf_de_boor( u_deg, v_deg, CPS, knots_u, knots_v, 0.5, 0.5, pnt, PNT, true);
+  std::cout << pnt << std::endl; 
+  surf_de_boor( u_deg, v_deg, CPS, knots_u, knots_v, 0.5, 0.5, pnt, DERIV_U, true);
+  std::cout << pnt << std::endl; 
+  surf_de_boor( u_deg, v_deg, CPS, knots_u, knots_v, 0.5, 0.5, pnt, DERIV_V, true);
+  std::cout << pnt << std::endl; 
+  surf_de_boor( u_deg, v_deg, CPS, knots_u, knots_v, 0.5, 0.5, pnt, DERIV_UV, true);
+  std::cout << pnt << std::endl; 
 
 
   std::ofstream datafile; 

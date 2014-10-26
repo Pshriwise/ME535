@@ -22,7 +22,7 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
       
       //use the all vectors of this column to make the new matrix of v_pnts
       for(unsigned int j=0; j<cps.n_rows; j++) v_pnts.insert_cols( j, cps(j,i) );
-      //std::cout << v_pnts << std::endl; 
+
       //now send this off to blossom_de_boor and add the returned point onto the u_pnts
       Mat<double> pnts;
       //blossom_de_boor( degree_v, v_pnts, knots_v, v, v_pnt, false);
@@ -41,8 +41,6 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
   
   //now we'll do a reduction in u as we normally do, but with the new u cps
 
-
-  std::cout << cps_post_v << std::endl; 
 
   field<vec> tbt(2,2); //two by two matrix of vectors that will let us get derivatives, points, etc. 
   
@@ -72,7 +70,6 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
   assert( 2 == sub_knots_v.size() ); 
   assert( 2 == sub_knots_u.size() ); 
 
-  std::cout << tbt << std::endl; 
   //now calculate what we want from this two by two matrix 
   
   //values and structures needed for almost every calc
@@ -162,7 +159,7 @@ void surf_de_boor( int degree_u, int degree_v,  field<vec> cps, std::vector<doub
   case DERIV_UV:
 
     //this gets messy... 
-    value = (degree_v*degree_u)*( ( (tbt(1,1)-tbt(0,1))/(sub_knots_v[1]-sub_knots_v[0]) )- ( (tbt(0,1)-tbt(0,0))/(sub_knots_v[1]-sub_knots_v[0]) )) / (sub_knots_u[1]-sub_knots_u[0]);
+    value = (degree_v*degree_u)*( ( (tbt(1,1)-tbt(1,0))/(sub_knots_v[1]-sub_knots_v[0]) )- ( (tbt(0,1)-tbt(0,0))/(sub_knots_v[1]-sub_knots_v[0]) )) / (sub_knots_u[1]-sub_knots_u[0]);
 
     if(nurbs)
       {
