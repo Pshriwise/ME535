@@ -7,8 +7,14 @@
 #include <armadillo>
 #include "formatting.hpp"
 #include "BSpline_algs.hpp"
+#include "Coons.hpp"
 
 using namespace arma;
+
+Row<double> c1 (double u);
+Row<double> c2 (double u);
+Row<double> c3 (double u);
+Row<double> c4 (double u);
 
 
 int main( int argc, char** argv)
@@ -76,6 +82,15 @@ int main( int argc, char** argv)
 	}
       }
 
+
+  std::ofstream datafile; 
+  datafile.open("NURBS_data.dat");
+
+  datafile << Surf.t();
+
+  datafile.close();
+
+
   part_header("B");
   pnt.clear();
   std::cout << "The value of the surface at u=0.5 and v=0.5 is:" << std::endl;
@@ -91,17 +106,118 @@ int main( int argc, char** argv)
   surf_de_boor( u_deg, v_deg, CPS, knots_u, knots_v, 0.5, 0.5, pnt, DERIV_UV, true);
   std::cout << pnt << std::endl; 
 
+  part_header("C"); 
 
-  std::ofstream datafile; 
-  datafile.open("data.dat");
 
-  datafile << Surf.t();
+  //function pointers for the coons surface
+  std::vector< Row<double>(*)(double) > func_ptrs; 
 
-  datafile.close();
+  func_ptrs.push_back(c1);
+  func_ptrs.push_back(c2);   
+  func_ptrs.push_back(c3);   
+  func_ptrs.push_back(c4); 
+
+  Mat<double>surf(0,0);
+  //sweet the parameter space, add to a matrix as we do so
+  for(double u = 0; u < 1; u+=0.01){
+    for(double v= 0; v < 1 ; v+=0.01){
+      surf.insert_rows(surf.n_rows, coons_value( func_ptrs, u, v)); 
+    }}
+
+
+  std::ofstream datafile1; 
+  datafile1.open("Coons_data.dat"); 
+  
+  datafile1 << surf;
+
+  datafile1.close(); 
+
 
   return 0;
 
 }
 
 
+
+Row<double> c1 (double u) 
+{
+
+  double ku [] = { 0, 0, 1, 1 };
+  std::vector<double> knots_u( ku, ku+ (sizeof(ku)/sizeof(ku[0]) ) );
+
+  double w [] = { 1, cos(M_PI/4), 1 };
+  std::vector<double> weights( w, w + (sizeof(w)/sizeof(w[0]) ) );
+
+  Mat<double> cps; 
+  cps << 1 << 0 << 0 << 1 << endr
+      << 1 << 1 << 0 << 1 << endr
+      << 0 << 1 << 0 << 1 << endr;
+
+  cps=cps.t();
+
+  //apply weights 
+  for(unsigned int i = 0; i < cps.n_cols; i++) cps.col(i) = weights[i]*cps.col(i);
+
+  Mat<double> pnt; 
+  //return point at u
+  blossom_de_boor( 2, cps, knots_u, u, pnt, false); 
+  pnt = pnt.submat(0,0,pnt.n_rows-2,0)/pnt(3);
+  
+  return pnt.t();
  
+}
+
+Row<double> c2 (double u)
+{
+
+  Row<double> pnt(3); 
+
+  pnt(0) = 1; 
+  pnt(1) = 0;
+  pnt(2) = u; 
+
+  return pnt; 
+
+}
+
+Row<double> c3 (double u) 
+{
+
+  double ku [] = { 0, 0, 1, 1 };
+  std::vector<double> knots_u( ku, ku+ (sizeof(ku)/sizeof(ku[0]) ) );
+
+  double w [] = { 1, cos(M_PI/4), 1 };
+  std::vector<double> weights( w, w + (sizeof(w)/sizeof(w[0]) ) );
+
+  Mat<double> cps; 
+  cps << 1 << 0 << 1 << 1 << endr
+      << 1 << 1 << 1 << 1 << endr
+      << 0 << 1 << 1 << 1 << endr;
+
+  cps=cps.t();
+
+  //apply weights 
+  for(unsigned int i = 0; i < cps.n_cols; i++) cps.col(i) = weights[i]*cps.col(i);
+
+  Mat<double> pnt; 
+  //return point at u
+  blossom_de_boor( 2, cps, knots_u, u, pnt, false); 
+  pnt = pnt.submat(0,0,pnt.n_rows-2,0)/pnt(3);
+  
+  return pnt.t();
+ 
+}
+
+
+Row<double> c4 (double u)
+{
+
+  Row<double> pnt(3); 
+
+  pnt(0) = 0; 
+  pnt(1) = 1;
+  pnt(2) = u; 
+
+  return pnt; 
+
+}
