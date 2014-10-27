@@ -7,6 +7,7 @@
 #include <armadillo>
 #include "formatting.hpp"
 #include "BSpline_algs.hpp"
+#include "Bezier_algs.hpp"
 #include "Coons.hpp"
 
 using namespace arma;
@@ -135,6 +136,38 @@ int main( int argc, char** argv)
 
   datafile1.close(); 
 
+
+  part_header("D"); 
+
+  field<vec> BCPS(4,4);
+
+  double val = cos(M_PI/4); 
+
+  double bw [] = { 1, (1+val)/2, (1+val)/2, 1 };
+  std::vector<double> bezier_weights( bw, bw + (sizeof(bw)/sizeof(bw[0]) ) );
+
+  for(unsigned int  i = 0; i <=3 ; i++)
+    {
+      double z = (double)i*(1.0/3.0);
+      std::cout << z << std::endl; 
+      BCPS(i,0) << 1 << 0  << z << 1 << endr;
+      BCPS(i,0) = bezier_weights[0]*BCPS(i,0);
+      BCPS(i,1) << 1 << val/(1+val)  << z << 1 << endr;
+      BCPS(i,1) = bezier_weights[1]*BCPS(i,1);
+      BCPS(i,2) << val/(1+val) << 1 << z << 1 << endr;
+      BCPS(i,2) = bezier_weights[2]*BCPS(i,2);
+      BCPS(i,3) << 0 << 1 << z << 1 << endr; 
+      BCPS(i,3) = bezier_weights[3]*BCPS(i,3);
+
+    }
+
+  std::cout << BCPS << std::endl; 
+
+  pnt.clear(); 
+  Bezier_bicubic_patch( BCPS, 0.5, 0.5, pnt, true); 
+
+  
+  std::cout << pnt/pnt(3,0) << std::endl; 
   return 0;
 
 }
@@ -207,7 +240,8 @@ Row<double> c3 (double u)
   pnt = pnt.submat(0,0,pnt.n_rows-2,0)/pnt(3);
   
   return pnt.t();
- 
+
+  
 }
 
 
