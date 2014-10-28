@@ -96,8 +96,8 @@ int main( int argc, char** argv)
   CPS(6,5) << 60 << 50 << 15;
   CPS(6,6) << 60 << 60 << 5;
 
-  std::cout << "The matrix of control points looks like" << std::endl; 
-  std::cout << CPS << std::endl; 
+  //std::cout << "The matrix of control points looks like" << std::endl; 
+  //std::cout << CPS << std::endl; 
 
   //std::cout << CPS(0,0).size() << std::endl; 
 
