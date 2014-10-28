@@ -9,6 +9,7 @@
 #include "BSpline_algs.hpp"
 #include "Bezier_algs.hpp"
 #include "Coons.hpp"
+#include "Ferguson.hpp"
 
 using namespace arma;
 
@@ -149,7 +150,6 @@ int main( int argc, char** argv)
   for(unsigned int  i = 0; i <=3 ; i++)
     {
       double z = (double)i*(1.0/3.0);
-      std::cout << z << std::endl; 
       BCPS(i,0) << 1 << 0  << z << 1 << endr;
       BCPS(i,0) = bezier_weights[0]*BCPS(i,0);
       BCPS(i,1) << 1 << val/(1+val)  << z << 1 << endr;
@@ -161,13 +161,74 @@ int main( int argc, char** argv)
 
     }
 
-  std::cout << BCPS << std::endl; 
+  //std::cout << BCPS << std::endl; 
 
   pnt.clear(); 
+
+  std::ofstream datafile2;
+  datafile2.open("bicubic_data.dat");
+
+  for(double u = 0; u<=1; u+=0.01)
+    for(double v = 0; v<=1; v+=0.01)
+      {{
+	  Bezier_bicubic_patch( BCPS, u, v, pnt, true); 
+	  datafile2 << pnt.t()/pnt(3,0);
+	}}
+
+  datafile2.close();
+
   Bezier_bicubic_patch( BCPS, 0.5, 0.5, pnt, true); 
+  std::cout << "Bezier bicubic surface at u = 0.5, v= 0.5: " << std::endl; 
+  std::cout << pnt/pnt(3,0) << std::endl; 
+
+  part_header("E");
+
+  //setup control points
+  field<vec> FCPS(4,4);
+  //corners  
+  FCPS(0,0) << 1 << 0 << 0 << endr; 
+  FCPS(1,0) << 0 << 1 << 0 << endr; 
+  FCPS(0,1) << 1 << 0 << 1 << endr; 
+  FCPS(1,1) << 0 << 1 << 1 << endr;
+
+  //tanget vectors in u 
+  FCPS(2,0) << 0 << 1 << 0 << endr; 
+  FCPS(3,0) << -1 << 0 << 0 << endr;
+  FCPS(2,1) = FCPS(2,0);
+  FCPS(3,1) = FCPS(3,0);
+
+  //tangent vectors in v
+  FCPS(0,2) << 0 << 0 << 1 << endr; 
+  FCPS(1,2) << 0 << 0 << 1 << endr;
+  FCPS(0,3) << 0 << 0 << 1 << endr; 
+  FCPS(1,3) << 0 << 0 << 1 << endr; 
+  
+  //fill in 
+  FCPS(2,2) << 0 << 0 << 0 << endr; 
+  FCPS(2,3) = FCPS(2,2);
+  FCPS(3,2) = FCPS(2,2);
+  FCPS(3,3) = FCPS(2,2);
+  
+  //std::cout << FCPS << std::endl; 
 
   
-  std::cout << pnt/pnt(3,0) << std::endl; 
+  
+  
+  std::ofstream datafile3;
+  datafile3.open("Ferg_data.dat"); 
+  
+  for(double u = 0; u<=1; u+=0.01)
+    for(double v = 0; v<=1; v+=0.01)
+      {{
+	  datafile3 << ferg_surf(FCPS,u,v);
+	}}
+
+  datafile3.close();
+
+  Row<double> fpnt = ferg_surf( FCPS, 0.5, 0.5); 
+  std::cout << "Ferguson surface at u = 0.5, v= 0.5: " << std::endl; 
+  std::cout << fpnt << std::endl; 
+  
   return 0;
 
 }
