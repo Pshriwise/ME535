@@ -20,9 +20,10 @@ z = zeros( num_ints*num_ints*num_ints);
 surf_pnts = zeros(num_ints,num_ints,3);
 
 for i = 1:num_ints
-    for j = 1:num_ints
+    for j = 1:i
             %set u,v,w values
-            u = i/num_ints; v = j/num_ints; w = 1-u-v;
+            a = i/num_ints; b = j/num_ints; 
+            u = a-b; v = 1-a; w = b;
             %calculate the point for this u,v,w
             pnt = BezierTriPatchPnt( P, u, v, w);
             surf_pnts(i,j,:) = pnt;
@@ -30,9 +31,12 @@ for i = 1:num_ints
 end
 
 
+surf_pnts(surf_pnts==0) = NaN;
+
 x=surf_pnts(:,:,1);
 y=surf_pnts(:,:,2); 
 z=surf_pnts(:,:,3);
+
 
 
 figure(2); 
