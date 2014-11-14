@@ -14,7 +14,6 @@ while rows ~= 1
     for i=1:rows-1
         for j=1:rows-i
             for k = 1:dim
-                k
                 P_new(i,j,k) = u*P(i,j,k)+v*P(i+1,j,k)+w*P(i,j+1,k);            
             end
         end
