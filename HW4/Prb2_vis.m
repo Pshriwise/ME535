@@ -23,5 +23,8 @@ for i = 1:intervals
 end
 
 
-surf(u,v,surf_pnts); shading interp;
+surf(u,v,surf_pnts); shading interp; hold on; 
+xlabel('u');
+ylabel('v');
+zlabel('S(u,v)');
 
