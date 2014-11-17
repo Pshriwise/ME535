@@ -19,14 +19,14 @@ z = zeros( num_ints*num_ints*num_ints);
 
 surf_pnts = zeros(num_ints,num_ints,3);
 
-for i = 1:num_ints
-    for j = 1:i
+for i = 0:num_ints
+    for j = 0:i
             %set u,v,w values
             a = i/num_ints; b = j/num_ints; 
             u = a-b; v = 1-a; w = b;
             %calculate the point for this u,v,w
             pnt = BezierTriPatchPnt( P, u, v, w);
-            surf_pnts(i,j,:) = pnt;
+            surf_pnts(i+1,j+1,:) = pnt;
     end
 end
 
