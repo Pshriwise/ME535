@@ -1,9 +1,9 @@
 % Script for getting a point on a Bezier Triangle Patch
 clear all;
-
+clc
 %setup matrix for CPs
 degree = 4; 
-P = zeros(degree,degree,3)
+P = zeros(degree,degree,3);
 
 %initialize CPs
 P(:,:,1) = [ 4 2 1 0; 4 2 1 0; 3 2 0 0; 2 0 0 0];
@@ -42,6 +42,10 @@ z=surf_pnts(:,:,3);
 figure(2); 
 clf;
 surf(x,y,z);
+xlabel('x');
+ylabel('y');
+zlabel('z');
+title('Problem 1 Cubic Trianglular Patch');
             
 
 
