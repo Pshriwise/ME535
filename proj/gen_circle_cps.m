@@ -1,18 +1,19 @@
 
-function [CPs] = gen_circle_cps(rad,center)
+function [CPs] = gen_circle_cps(rad,center, n)
 
-normal = [ 0 0 1 ]
-
+normal = n
 %get a normal vector (any normal vector for now)
-perp = [ -normal(3) normal(1) 0 ]
-perp = perp./norm(perp);
+ax1 = normal(:).'/norm(normal);
+ax23 = null(ax1).';
+axes = [ax1;ax23];
+perp = axes(2,:);
+
 
 %asssumes the normal vector is of unit length
- x = center(1);
- y = center(2);
- z = center(3);
+x = center(1);
+y = center(2);
+z = center(3);
  
-  
 CPs = [x y z; x y z; x y z; x y z; x y z; x y z; x y z; x y z; x y z];
 
 for i = 1:9

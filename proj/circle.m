@@ -1,7 +1,7 @@
 %Circle function
-function [cir_pnts] = circle(rad, center)
+function [cir_pnts] = circle(rad, center, n)
 
-P = gen_circle_cps(rad, center);
+P = gen_circle_cps(rad, center, n);
 P
 [a b] = size(P);
 P = [P ones(a,1)];
