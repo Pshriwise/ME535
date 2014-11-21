@@ -13,13 +13,16 @@ end
 %t = [ 0 0 0 1 1 1];
 %k = 3;
 n = 20;
-tent_pnts = zeros(ints,3,n);
+% there should be ints sets of points each having n points in 4 sections
+% and in 3 dimesnions
+tent_pnts = zeros(ints,n*4,3);
+u_min = 0.01;
+for i = 1:ints
 
-for u = 0.01:1/ints:1
-
-    center = deBoor(k,t,P,u,3);
+    u = u_min + i*((1-u_min)/ints);
+    center = de_Boor(path_CPs,k,t,u,-1);
     du = 0.0001;
-    n = (1/du)*(deBoor(k,t,P,u+du,3)-deBoor(k,t,P,u,3));
+    n = de_Boor_deriv(path_CPs, k, t, u, -1)
     n = n./norm(n);
     pnts = circle(get_circle_rad(u), center, n);
     if(plot)

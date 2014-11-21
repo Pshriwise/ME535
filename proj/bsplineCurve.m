@@ -10,7 +10,7 @@ L = 1;             %index to computed point
 for i=(k):(m)       %b-splinbe parameter domain  is t(k) - t(m+1)
     step = (t(i+1)-t(i))/(n-1);   %parameter increment step
     for u=t(i):step:(t(i+1))      %do calculation for every segment
-        Q(L,:) = deBoor(k, t, P, u, i); %P, degree, u, knots, i, 0);
+        Q(L,:) = de_Boor(P, k, t, u, i); %P, degree, u, knots, i, 0);
         L = L+1;
     end
 end
