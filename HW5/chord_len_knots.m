@@ -11,7 +11,7 @@ for i = 1:num_pnts-1
 end
 
 %get the un-normalized knot values
-knots = zeros(1,num_pnts)
+knots = zeros(1,num_pnts);
 for i = 2:num_pnts
     knots(i)= sum(chords(1:i-1));
 end
