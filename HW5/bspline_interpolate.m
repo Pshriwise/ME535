@@ -7,7 +7,7 @@ function [ P, U ] = bspline_interpolate( D, k )
 
 us = chord_len_knots(D);
 
-U = get_knot_vector(us, k); 
+U = get_knot_vector(us, k, -1); 
 
 %add superfluous knots 
 U = horzcat(0,U,1);

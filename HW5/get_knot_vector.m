@@ -1,7 +1,9 @@
 
-function U = get_knot_vector(us, k)
+function U = get_knot_vector(us, k, n)
 
+if ( -1 == n)
 [b n] = size(us);
+end
 
 U = zeros(1,n+k-1); 
 
