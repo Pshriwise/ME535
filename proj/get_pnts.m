@@ -1,13 +1,13 @@
-function [pnts] = get_pnts( base, sub_knots, u, num_pnts )
+function [pnts, knots] = get_pnts( base, sub_knots, u, num_pnts )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
-
 
 
 [a b] = size(base);
 
 if ( a == num_pnts ) 
     pnts = base;
+    knots = sub_knots;
     return; 
 end
 
@@ -25,7 +25,7 @@ end
 
 sub_knots = sub_knots(2:end-1);
 
-pnts = get_pnts(new_base, sub_knots, u, num_pnts);
 
+[pnts, knots] = get_pnts(new_base, sub_knots, u, num_pnts);
 
 

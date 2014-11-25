@@ -4,6 +4,8 @@ function [tent_pnts] = tentacle( path_CPs, k, t, plot, ints )
 % k - degree of path
 % t - knot vector for the path 
 
+[m,d] = size(path_CPs);
+
 if (plot)
 figure(1);
 hold on;
@@ -15,19 +17,51 @@ end
 n = 20;
 % there should be ints sets of points each having n points in 4 sections
 % and in 3 dimesnions
-tent_pnts = zeros(ints,n*4,3);
-u_min = 0.01;
-for i = 1:ints
+tol = 0.5;
+index = 1;
+u = t(k);
 
-    u = u_min + i*((1-u_min)/ints);
-    center = de_Boor(path_CPs,k,t,u,-1);
-    du = 0.0001;
-    n = de_Boor_deriv(path_CPs, k, t, u, -1)
+%add the first point
+center = de_Boor(path_CPs,k,t,u,-1);
+    n = de_Boor_deriv(path_CPs, k, t, u, -1);
     n = n./norm(n);
-    pnts = circle(get_circle_rad(u), center, n);
-    if(plot)
-    scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
-    plot3(pnts(:,1),pnts(:,2),pnts(:,3), '-')
+    pnts = gen_circle_cps(get_circle_rad(u), center, n);
+    %apply weights
+    w = [ 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1];
+    for i = 1:9
+        pnts(i,:) = pnts(i,:)*w(i);
     end
-    tent_pnts(i,:,:)= pnts;
+    
+    if(plot)
+    %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
+    plot3(pnts(:,1),pnts(:,2),pnts(:,3), 'black-')
+    end
+    index = index + 1; 
+    tent_pnts(index,:,:)= pnts;
+    
+%now add the rest 
+while true
+
+    u = get_next_u( path_CPs,k,t,u, tol );
+    center = de_Boor(path_CPs,k,t,u,-1);
+    n = de_Boor_deriv(path_CPs, k, t, u, -1);
+    n = n./norm(n);
+    pnts = gen_circle_cps(get_circle_rad(u), center, n);
+    %apply weights
+    w = [ 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1];
+    for i = 1:9
+        pnts(i,:) = pnts(i,:)*w(i);
+    end
+    if(plot)
+    %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
+    plot3(pnts(:,1),pnts(:,2),pnts(:,3), 'black-')
+    end
+    index = index + 1; 
+    tent_pnts(index,:,:)= pnts;
+    
+    if ( u == t(m) )
+        break; 
+    end
+   
+    
 end

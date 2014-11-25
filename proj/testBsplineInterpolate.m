@@ -10,8 +10,8 @@ n=5;
 % compute Bspline control points
 [P, knots] = BsplineInterpolate(D,k,n);
 P 
-knots
-k
+%knots = [ 0 0 0 0 1 1 1 1];
+%k
 % plot data points
 plot(D(:,1), D(:,2),'rs');
 hold on;

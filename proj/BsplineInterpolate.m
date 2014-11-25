@@ -11,7 +11,8 @@ function [P, U] = BsplineInterpolate(D,k,n)
 
 % D=[0 0; 3 4; -1 4; -4 0; -4 -3]; % data points
 %D=[4 1; 5 2; 6 2;8 2;9 3];
-% k=4;
+% k=4;le tabs matlab 
+
 % n=5;
 
 % input: D, k, n

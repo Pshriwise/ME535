@@ -4,8 +4,15 @@ clear all;
 close all;
 clc;
 %get the start points of the circle 
+figure();
+hold on; 
+xlabel('x');
+ylabel('y');
+zlabel('z');
+grid on;
 
-body_radius = 5;
+
+body_radius = 3;
 angles = linspace(0,360,8);
 
 norm_vecs = [cosd(angles(:)) sind(angles(:)) 0*angles(:)];
@@ -19,30 +26,40 @@ CP1 = [centers(1,:); centers(1,:)+norm_vecs(1,:); centers(1,:)+3*norm_vecs(1,:);
 k = 3;
 t = [ 0 0 0 0.5 1 1 1];
 
-tentacle( CP1, k, t, true, 20); 
+%get the tentacle points
+tent_pnts = tentacle( CP1, k, t, true, 20); 
+%plot the curve as well (for verification)
 curve = bsplineCurve(CP1, k , t, 20); 
-
 plot3(curve(:,1),curve(:,2),curve(:,3),'r')
 
-CP2 = [centers(2,:); centers(2,:)+norm_vecs(2,:); centers(2,:)+3*norm_vecs(2,:); 19 10 11; 19 20 19; 15 18 51];
-k = 3;
-t = [ 0 0 0 0.5 1 1 1];
+%setup knot array
+[a b c] = size(tent_pnts); 
 
-tentacle( CP2, k, t, true, 20 ); 
-curve = bsplineCurve(CP2, k , t, 20); 
+for i = 1:a
+    tent_knots(i,:) = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
+end
 
-plot3(curve(:,1),curve(:,2),curve(:,3),'r')
 
-CP3 = [centers(3,:); centers(3,:)+norm_vecs(3,:); centers(3,:)+3*norm_vecs(3,:); 19 10 -5; 19 20 -19; 15 18 -51];
-k = 3;
-t = [ 0 0 0 0.5 1 1 1];
 
-tentacle( CP3, k, t, true, 20 ); 
-curve = bsplineCurve(CP3, k , t, 20); 
 
-plot3(curve(:,1),curve(:,2),curve(:,3),'r')
 
-xlabel('x');
-ylabel('y');
-zlabel('z');
-grid on;
+
+% 
+% CP2 = [centers(2,:); centers(2,:)+norm_vecs(2,:); centers(2,:)+3*norm_vecs(2,:); 19 10 11; 19 20 19; 15 18 51];
+% k = 3;
+% t = [ 0 0 0 0.5 1 1 1];
+% 
+% tentacle( CP2, k, t, true, 20 ); 
+% curve = bsplineCurve(CP2, k , t, 20); 
+% 
+% plot3(curve(:,1),curve(:,2),curve(:,3),'r')
+% 
+% CP3 = [centers(3,:); centers(3,:)+norm_vecs(3,:); centers(3,:)+3*norm_vecs(3,:); 19 10 -5; 19 20 -19; 15 18 -51];
+% k = 3;
+% t = [ 0 0 0 0.5 1 1 1];
+% 
+% tentacle( CP3, k, t, true, 20 ); 
+% curve = bsplineCurve(CP3, k , t, 20); 
+% 
+% plot3(curve(:,1),curve(:,2),curve(:,3),'r')
+% 

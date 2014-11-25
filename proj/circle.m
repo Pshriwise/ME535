@@ -2,7 +2,7 @@
 function [cir_pnts] = circle(rad, center, n)
 
 P = gen_circle_cps(rad, center, n);
-P
+
 [a b] = size(P);
 P = [P ones(a,1)];
 %P = [ 1 0 0 1;  1 1 0 1; 0 1 0 1; -1 1 0 1; -1 0 0 1; -1 -1 0 1; 0 -1 0 1; 1 0 0 1]

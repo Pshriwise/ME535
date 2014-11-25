@@ -1,7 +1,7 @@
 
 function [CPs] = gen_circle_cps(rad,center, n)
 
-normal = n
+normal = n;
 %get a normal vector (any normal vector for now)
 ax1 = normal(:).'/norm(normal);
 ax23 = null(ax1).';
