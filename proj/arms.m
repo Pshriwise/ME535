@@ -41,36 +41,69 @@ circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 ints = 20; 
 u_vec= linspace(0,1,20);
 v_vec= linspace(0,1,20);
-
-for i = 1:ints
-    for j = 1:ints 
-        suf(i,j,:) = surf_de_Boor(tent_pnts,2,3,circle_knots,t,u_vec(i),v_vec(j));
+surface = zeros(a,ints,3);
+for i = 1:a
+    for j = 1:ints
+			surface(i,j,:) = de_Boor(squeeze(tent_pnts(i,:,:)),2,circle_knots,v_vec(j),-1);
     end
 end
 
-surf(suf(:,:,1),suf(:,:,2),suf(:,:,3))
+surf(surface(:,:,1),surface(:,:,2),surface(:,:,3))
    
+ 
+ CP2 = [centers(2,:); centers(2,:)+norm_vecs(2,:); centers(2,:)+3*norm_vecs(2,:); 19 10 11; 19 20 19; 15 18 51];
+ k = 3;
+ t = [ 0 0 0 0.25 0.75 1 1 1];
+ 
+ tent_pnts = tentacle( CP2, k, t, true, 20 ); 
+ curve = bsplineCurve(CP2, k , t, 20); 
+ 
+ plot3(curve(:,1),curve(:,2),curve(:,3),'r')
 
+[a b c] = size(tent_pnts); 
+surface = zeros(a,ints,3);
+for i = 1:a
+    for j = 1:ints
+			surface(i,j,:) = de_Boor(squeeze(tent_pnts(i,:,:)),2,circle_knots,v_vec(j),-1);
+    end
+end
 
+surf(surface(:,:,1),surface(:,:,2),surface(:,:,3))
+ 
+ CP3 = [centers(3,:); centers(3,:)+norm_vecs(3,:); centers(3,:)+3*norm_vecs(3,:); 19 10 -5; 19 20 -19; 15 10 -51];
+ k = 3;
+ t = [ 0 0 0 0.5 1 1 1];
+ 
+ tent_pnts = tentacle( CP3, k, t, true, 20 ); 
+ curve = bsplineCurve(CP3, k , t, 20); 
+ 
+ plot3(curve(:,1),curve(:,2),curve(:,3),'r')
+ 
+[a b c] = size(tent_pnts); 
+surface = zeros(a,ints,3);
+for i = 1:a
+    for j = 1:ints
+			surface(i,j,:) = de_Boor(squeeze(tent_pnts(i,:,:)),2,circle_knots,v_vec(j),-1);
+    end
+end
 
+surf(surface(:,:,1),surface(:,:,2),surface(:,:,3))
 
+ CP4 = [centers(4,:); centers(4,:)+norm_vecs(4,:); centers(4,:)+3*norm_vecs(4,:); -8 5 -5; -10 20 -12; -20 14 -30];
+ k = 3;
+ t = [ 0 0 0 0.5 1 1 1];
+ 
+ tent_pnts = tentacle( CP4, k, t, true, 20 ); 
+ curve = bsplineCurve(CP4, k , t, 20); 
+ 
+ plot3(curve(:,1),curve(:,2),curve(:,3),'r')
+ 
+[a b c] = size(tent_pnts); 
+surface = zeros(a,ints,3);
+for i = 1:a
+    for j = 1:ints
+			surface(i,j,:) = de_Boor(squeeze(tent_pnts(i,:,:)),2,circle_knots,v_vec(j),-1);
+    end
+end
 
-% 
-% CP2 = [centers(2,:); centers(2,:)+norm_vecs(2,:); centers(2,:)+3*norm_vecs(2,:); 19 10 11; 19 20 19; 15 18 51];
-% k = 3;
-% t = [ 0 0 0 0.5 1 1 1];
-% 
-% tentacle( CP2, k, t, true, 20 ); 
-% curve = bsplineCurve(CP2, k , t, 20); 
-% 
-% plot3(curve(:,1),curve(:,2),curve(:,3),'r')
-% 
-% CP3 = [centers(3,:); centers(3,:)+norm_vecs(3,:); centers(3,:)+3*norm_vecs(3,:); 19 10 -5; 19 20 -19; 15 18 -51];
-% k = 3;
-% t = [ 0 0 0 0.5 1 1 1];
-% 
-% tentacle( CP3, k, t, true, 20 ); 
-% curve = bsplineCurve(CP3, k , t, 20); 
-% 
-% plot3(curve(:,1),curve(:,2),curve(:,3),'r')
-% 
+surf(surface(:,:,1),surface(:,:,2),surface(:,:,3))

@@ -17,7 +17,7 @@ function pnt = surf_de_Boor( CPs, p, q, tu, tv, u, v)
 for i = 1:l
     
     ctrl_pnts = squeeze(CPs(i,:,:));
-    temp(i,:) = de_Boor(ctrl_pnts,p,tu,u,-1)
+temp(i,:) = de_Boor(ctrl_pnts,p,tu,u,-1);
 end
 
 %calculate the value of the point along v

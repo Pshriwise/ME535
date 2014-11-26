@@ -19,55 +19,49 @@ n = 20;
 % and in 3 dimesnions
 tol = 0.5;
 index = 1;
+u = t(k);
 
-
-
-%for each control point, we should generate a set of control points for the
-%revolved surface
-
-for i = 1:m
-    u = (i-1)*(1/m);
-    radius = get_circle_rad(u);
-    center = de_Boor(path_CPs,k,t,u,-1);
-    normal = de_Boor_deriv(path_CPs,k,t,u,-1);
-    normal= normal./norm(normal);
-    tent_pnts(i,:,:) = gen_circle_cps(radius,center,normal); 
-     if(plot)
-     %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
-     plot3(tent_pnts(i,:,1),tent_pnts(i,:,2),tent_pnts(i,:,3), 'black-')
-     end
-end
+%add the first point
+center = de_Boor(path_CPs,k,t,u,-1);
+    n = de_Boor_deriv(path_CPs, k, t, u, -1);
+    n = n./norm(n);
+    pnts = gen_circle_cps(get_circle_rad(u), center, n);
+    %apply weights
+%    w = [ 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1];
+%    for i = 1:9
+%        pnts(i,:) = pnts(i,:)*w(i);
+%    end
+    
+    if(plot)
+    %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
+    plot3(pnts(:,1),pnts(:,2),pnts(:,3), 'black-')
+    end
+    tent_pnts(index,:,:)= pnts;
 
     
-%add the first point
-% center = de_Boor(path_CPs,k,t,u,-1);
-%     n = de_Boor_deriv(path_CPs, k, t, u, -1);
-%     n = n./norm(n);
-%     pnts = gen_circle_cps(get_circle_rad(u), center, n);
-%     if(plot)
-%     %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
-%     plot3(pnts(:,1),pnts(:,2),pnts(:,3), 'black-')
-%     end
-%     index = index + 1; 
-%     tent_pnts(index,:,:)= pnts;
-%     
 %now add the rest 
-% while true
-% 
-%     u = get_next_u( path_CPs,k,t,u, tol );
-%     center = de_Boor(path_CPs,k,t,u,-1);
-%     n = de_Boor_deriv(path_CPs, k, t, u, -1);
-%     n = n./norm(n);
-%     pnts = gen_circle_cps(get_circle_rad(u), center, n);
-%     if(plot)
-%     %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
-%     plot3(pnts(:,1),pnts(:,2),pnts(:,3), 'black-')
-%     end
-%     index = index + 1; 
-%     tent_pnts(index,:,:)= pnts;
-%     
-%     if ( u == t(m) )
-%         break; 
-%     end
-%    
-% end
+while true
+
+    u = get_next_u( path_CPs,k,t,u, tol );
+    center = de_Boor(path_CPs,k,t,u,-1);
+    n = de_Boor_deriv(path_CPs, k, t, u, -1);
+    n = n./norm(n);
+    pnts = gen_circle_cps(get_circle_rad(u), center, n);
+    %apply weights
+%    w = [ 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1];
+ %   for i = 1:9
+  %      pnts(i,:) = pnts(i,:)*w(i);
+   % end
+    if(plot)
+    %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
+    plot3(pnts(:,1),pnts(:,2),pnts(:,3), 'black-')
+    end
+    index = index + 1; 
+    tent_pnts(index,:,:)= pnts;
+    
+    if ( u == t(m) )
+        break; 
+    end
+   
+    
+end
