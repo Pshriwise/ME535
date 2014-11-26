@@ -17,7 +17,7 @@ end
 n = 20;
 % there should be ints sets of points each having n points in 4 sections
 % and in 3 dimesnions
-tol = 0.5;
+tol = 0.2;
 index = 1;
 u = t(k);
 
