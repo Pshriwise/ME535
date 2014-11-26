@@ -14,15 +14,28 @@ end
 %setup knot array
 [a b c] = size(tent_pnts); 
 
+%add weights
+weights = [ 1 sqrt(2)/2];
+weights = horzcat(weights,weights,weights,weights,1)
+
+for i = 1:a
+    for j = 1:b
+        tent_pnts(i,j,:) = squeeze(tent_pnts(i,j,:).*weights(j));
+        tent_pnts(i,j,4) = weights(j);
+    end
+end
+
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 
 ints = 20; 
 u_vec= linspace(0,1,20);
 v_vec= linspace(0,1,20);
-surface = zeros(a,ints,3);
+surface = zeros(a,ints,c+1);
 for i = 1:a
     for j = 1:ints
-			surface(i,j,:) = de_Boor(squeeze(tent_pnts(i,:,:)),2,circle_knots,v_vec(j),-1);
+			surface(i,j,:) =  de_Boor(squeeze(tent_pnts(i,:,:)),2,circle_knots,v_vec(j),-1);
+            %reduce weight
+            surface(i,j,:) = surface(i,j,:)./surface(i,j,end);
     end
 end
 

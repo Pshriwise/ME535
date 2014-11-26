@@ -25,7 +25,7 @@ CP1 = [centers(1,:); centers(1,:)+norm_vecs(1,:); centers(1,:)+3*norm_vecs(1,:);
 k = 3;
 t = [ 0 0 0 0.2 0.3 1 1 1];
 
-arm( CP1, t, k, false,true);   
+arm( CP1, t, k, false, true);   
  
 CP2 = [centers(2,:); centers(2,:)+norm_vecs(2,:); centers(2,:)+3*norm_vecs(2,:); 10 15 11; 19 20 19; 15 18 51];
 k = 3;
