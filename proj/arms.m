@@ -25,29 +25,43 @@ CP1 = [centers(1,:); centers(1,:)+norm_vecs(1,:); centers(1,:)+3*norm_vecs(1,:);
 k = 3;
 t = [ 0 0 0 0.2 0.3 1 1 1];
 
-arm( CP1, t, k, false, true);   
- 
+ctrl_cage = arm( CP1, t, k, false, true);   
+
+bod_connection(ctrl_cage, false, 0)
+
+
 CP2 = [centers(2,:); centers(2,:)+norm_vecs(2,:); centers(2,:)+3*norm_vecs(2,:); 10 15 11; 19 20 19; 15 18 51];
 k = 3;
 t = [ 0 0 0 0.25 0.75 1 1 1];
  
 arm(CP2,t,k, false,true);
 
+bod_connection(ctrl_cage, false, 45);
+
+
 CP3 = [centers(3,:); centers(3,:)+norm_vecs(3,:); centers(3,:)+3*norm_vecs(3,:); 10 15 -5; 19 20 -19; 15 10 -51];
 k = 3;
-t = [ 0 0 0 0.5 1 1 1];
+t = [ 0 0 0 0.25 0.75 1 1 1];
 
 arm(CP3,t,k,false,true);
 
-CP4 = [centers(4,:); centers(4,:)+norm_vecs(4,:); centers(4,:)+3*norm_vecs(4,:); -8 5 -5; -10 20 -12; -20 14 -30];
-k = 3;
-t = [ 0 0 0 0.5 1 1 1]; 
+bod_connection(ctrl_cage, false, 90);
  
-arm(CP4,t,k,false,true);
 
 
 CP5 = [centers(5,:); centers(5,:)+norm_vecs(5,:); centers(5,:)+3*norm_vecs(5,:); -8 5 -5; -10 10 -12; -20 12 -30];
 k = 3;
-t = [ 0 0 0 0.5 1 1 1]; 
+t = [ 0 0 0 0.25 0.75 1 1 1]; 
  
-arm(CP5,t,k,false,true);
+ctrl_cage = arm(CP5,t,k,false,true);
+
+
+bod_connection(ctrl_cage, true, 0);
+
+CP4 = [centers(4,:); centers(4,:)+norm_vecs(4,:); centers(4,:)+3*norm_vecs(4,:); -8 5 -5; -10 20 -12; -20 14 -30];
+k = 3;
+t = [ 0 0 0 0.25 0.75 1 1 1]; 
+ 
+arm(CP4,t,k,false,true);
+
+bod_connection(ctrl_cage, true, -45);

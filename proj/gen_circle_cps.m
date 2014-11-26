@@ -1,7 +1,14 @@
 
 function [CPs] = gen_circle_cps(rad,center, n)
 
-normal = n;
+%perturb normal if needed
+if [ 0 1 0 ] == n 
+    n = [ 1e-7 1 0];
+end
+
+if [ 0 -1 0] == n
+    n = [ 1e-7 -1 0]
+end
 %get a normal vector (any normal vector for now)
 % ax1 = normal(:).'/norm(normal);
 % ax23 = null(ax1).';
@@ -10,7 +17,7 @@ normal = n;
 
 dum = [ -n(3) 0 n(1) ];
 
-perp = cross(dum, normal);
+perp = cross(dum, n);
 perp = perp./norm(perp);
 
 %asssumes the normal vector is of unit length
@@ -27,7 +34,7 @@ for i = 1:9
     else mag = rad; 
     end
     %rotate vector by 45 degrees
-    if ( 1 ~= i )perp = cosd(45)*perp +sind(45)*cross(perp,normal); end
+    if ( 1 ~= i )perp = cosd(45)*perp +sind(45)*cross(perp,n); end
     
     v = mag*perp;
 

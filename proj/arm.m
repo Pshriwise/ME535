@@ -1,6 +1,6 @@
 
 
-function arm( CPs, t, k, boxes, render)
+function [ctrl_cage] = arm( CPs, t, k, boxes, render)
 
 
 %get the tentacle points
@@ -16,12 +16,11 @@ end
 
 %add weights
 weights = [ 1 sqrt(2)/2];
-weights = horzcat(weights,weights,weights,weights,1)
+weights = horzcat(weights,weights,weights,weights,1);
 
 for i = 1:a
     for j = 1:b
-        tent_pnts(i,j,:) = squeeze(tent_pnts(i,j,:).*weights(j));
-        tent_pnts(i,j,4) = weights(j);
+        tent_pntsW(i,j,:) = [squeeze(tent_pnts(i,j,:).*weights(j));weights(j)];
     end
 end
 
@@ -33,11 +32,13 @@ v_vec= linspace(0,1,20);
 surface = zeros(a,ints,c+1);
 for i = 1:a
     for j = 1:ints
-			surface(i,j,:) =  de_Boor(squeeze(tent_pnts(i,:,:)),2,circle_knots,v_vec(j),-1);
+			surface(i,j,:) =  de_Boor(squeeze(tent_pntsW(i,:,:)),2,circle_knots,v_vec(j),-1);
             %reduce weight
             surface(i,j,:) = surface(i,j,:)./surface(i,j,end);
     end
 end
+
+ctrl_cage = tent_pnts;
 
 
 if (render) 
