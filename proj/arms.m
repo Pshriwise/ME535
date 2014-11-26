@@ -35,10 +35,21 @@ plot3(curve(:,1),curve(:,2),curve(:,3),'r')
 %setup knot array
 [a b c] = size(tent_pnts); 
 
-for i = 1:a
-    tent_knots(i,:) = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
+
+circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
+
+ints = 20; 
+u_vec= linspace(0,1,20);
+v_vec= linspace(0,1,20);
+
+for i = 1:ints
+    for j = 1:ints 
+        suf(i,j,:) = surf_de_Boor(tent_pnts,2,3,circle_knots,t,u_vec(i),v_vec(j));
+    end
 end
 
+surf(suf(:,:,1),suf(:,:,2),suf(:,:,3))
+   
 
 
 
