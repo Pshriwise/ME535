@@ -1,5 +1,8 @@
 %script for creating the tentacles of the octopus
 
+%functions in a hw directory are needed for this 
+addpath('../HW5/')
+
 clear all; 
 close all;
 clc;
