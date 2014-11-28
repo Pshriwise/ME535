@@ -43,10 +43,10 @@ angle = 360/(2*sections);
 for i = 1:(2*sections+1)
 
     %start at the center 
-    CPs(i,:) = c;
-    %set magnitude for this point
-    if ( 0 == mod(i,2) ) mag = sqrt(2)*rad; 
-    else mag = rad; 
+    pnts(i,:) = c;
+    %set magnitude and weight for this point
+    if ( 0 == mod(i,2) ) mag = sqrt(2)*rad; weights(i) = cosd(angle);
+    else mag = rad; weights(i) = 1;
     end
     %rotate vector by our angle
     if ( 1 ~= i )perp = cosd(angle)*perp +sind(angle)*cross(perp,n); end
@@ -54,7 +54,7 @@ for i = 1:(2*sections+1)
     %set the detla vector relative to the center
     v = mag*perp;
 
-    CPs(i,:) = CPs(i,:)+v;
+    pnts(i,:) = pnts(i,:)+v;
 
     %renormalize the perp vector
     perp = perp./norm(perp);
@@ -63,4 +63,8 @@ end
 
 
     
+%add weights before returning
+for i = 1:(2*sections+1)
+    CPs(i,:) = horzcat(pnts(i,:),weights(i));
+end
 

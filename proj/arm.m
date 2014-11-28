@@ -24,17 +24,16 @@ R = [ cosd(angle) -sind(angle) 0; sind(angle) cosd(angle) 0; 0 0 1];
 %apply rotation to tentacle points 
 for i = 1:a
     for j = 1:b 
-        tent_pnts(i,j,:) = R*squeeze(tent_pnts(i,j,:));
+        tent_pnts(i,j,1:c-1) = R*squeeze(tent_pnts(i,j,1:c-1));
     end
 end
 
 %add weights
-weights = [ 1 sqrt(2)/2];
-weights = horzcat(weights,weights,weights,weights,1);
-
+ 
 for i = 1:a
     for j = 1:b
-        tent_pntsW(i,j,:) = [squeeze(tent_pnts(i,j,:).*weights(j));weights(j)];
+        tent_pntsW(i,j,1:c-1) = squeeze(tent_pnts(i,j,1:3)).* tent_pnts(i,j,end);
+        tent_pntsW(i,j,c) = tent_pnts(i,j,c);
     end
 end
 
@@ -43,7 +42,7 @@ circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 ints = 21; 
 u_vec= linspace(0,1,ints);
 v_vec= linspace(0,1,ints);
-surface = zeros(a,ints,c+1);
+surface = zeros(a,ints,c);
 for i = 1:a
     for j = 1:ints
 			surface(i,j,:) =  de_Boor(squeeze(tent_pntsW(i,:,:)),2,circle_knots,v_vec(j),-1);

@@ -54,13 +54,12 @@ for i = 1:6
     CP_array(:,i,:) = gen_circle_cps(radii(i),centers(i,:),[0 0 1]);
 end
 
-weights = [ 1 sqrt(2)/2];
-weights = horzcat(weights,weights,weights,weights,1);
 [a b c] = size(CP_array);
-CP_arrayW=zeros(a,b,c+1);
+CP_arrayW=zeros(a,b,c);
 for i = 1:a
     for j = 1:b
-        CP_arrayW(i,j,:) = [ squeeze(CP_array(i,j,:))*weights(i);weights(i) ];
+        CP_arrayW(i,j,1:c-1) = squeeze(CP_array(i,j,1:c-1))*CP_array(i,j,c);
+        CP_arrayW(i,j,c) = CP_array(i,j,c);
     end
 end
 
