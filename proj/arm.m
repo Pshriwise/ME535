@@ -40,9 +40,9 @@ end
 
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 
-ints = 20; 
-u_vec= linspace(0,1,20);
-v_vec= linspace(0,1,20);
+ints = 21; 
+u_vec= linspace(0,1,ints);
+v_vec= linspace(0,1,ints);
 surface = zeros(a,ints,c+1);
 for i = 1:a
     for j = 1:ints

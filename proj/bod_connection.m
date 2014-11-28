@@ -38,6 +38,7 @@ for i = 3:13
     adj_surf_CPs(i,6:9,3) = adj_surf_CPs(i-1,6:9,3).*1.04;
 end
 
+
 %create rotation matrix 
 R = [ cosd(angle) -sind(angle) 0; sind(angle) cosd(angle) 0; 0 0 1];
 
@@ -57,7 +58,7 @@ end
 %show the surface points for this small segment
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 
-ints = 20;
+ints = 21;
 v_vec = linspace(0,1,ints); 
 [a b c] = size(adj_surf_CPsW);
 surface = zeros(a,ints,c);

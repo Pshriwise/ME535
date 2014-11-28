@@ -34,3 +34,47 @@ end
 
 
 
+%Body CPs
+
+CPs = [ 0 0 17; 1 0 17; 2 0 17; 7 0 12; 3 0 5; 2.7502 0 1.5395];
+
+p = 3;
+
+tu = [ 0 0 0 0.3 0.6 1 1 1];
+
+centers = CPs; 
+centers(:,1) = 0*centers(:,1);
+
+radii = CPs(:,1);
+
+for i = 1:6
+    CP_array(:,i,:) = gen_circle_cps(radii(i),centers(i,:),[0 0 1]);
+end
+
+weights = [ 1 sqrt(2)/2];
+weights = horzcat(weights,weights,weights,weights,1);
+[a b c] = size(CP_array);
+CP_arrayW=zeros(a,b,c+1);
+for i = 1:a
+    for j = 1:b
+        CP_arrayW(i,j,:) = [ squeeze(CP_array(i,j,:))*weights(i);weights(i) ];
+    end
+end
+
+
+q = 2;
+circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
+
+
+ints = 20;
+
+for i = 1:ints
+    for j = 1:9 
+        u = (i-1)/(ints-1);
+        v = (j-1)/(9-1);
+      surface(i,j,:) = surf_de_Boor(CP_arrayW,p,q,tu,circle_knots,u,v);
+      surface(i,j,:) = surface(i,j,:)./surface(i,j,end);  %remove weights
+    end
+end
+
+mesh(surface(:,:,1),surface(:,:,2),surface(:,:,3),gradient(surface(:,:,3)),'facealpha',0)
