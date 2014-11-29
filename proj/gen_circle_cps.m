@@ -45,7 +45,7 @@ for i = 1:(2*sections+1)
     %start at the center 
     pnts(i,:) = c;
     %set magnitude and weight for this point
-    if ( 0 == mod(i,2) ) mag = sqrt(2)*rad; weights(i) = cosd(angle);
+    if ( 0 == mod(i,2) ) mag = (1/cosd(angle))*rad; weights(i) = cosd(90-angle);
     else mag = rad; weights(i) = 1;
     end
     %rotate vector by our angle
