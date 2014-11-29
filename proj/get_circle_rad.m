@@ -1,8 +1,8 @@
 function [radius] = get_circle_rad(u, show)
     
     start_rad = 1;
-    r_vals = [ 1; 0.95; 0.63; 0.3; 0];
-    u_vals = [ 0; 0.08;0.18; 0.85; 1 ];
+    r_vals = [ 1; 0.95; 0.69; 0.4; 0.1];
+    u_vals = [ 0; 0.08;0.18; 0.75; 1 ];
     k = 3;
     Data = [u_vals r_vals];
     
