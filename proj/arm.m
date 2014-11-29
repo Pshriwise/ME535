@@ -9,13 +9,71 @@ plot3(curve(:,1),curve(:,2),curve(:,3),'r')
 plot3(tent_pnts(:,1,1),tent_pnts(:,1,2),tent_pnts(:,1,3))
 end
 
-%get the tentacle points
-tent_pnts = tentacle( CPs, k, t, boxes, 20); 
-
-bod_connection( tent_pnts, false, angle);
-
 %create rotation matrix (about z-axis) 
 R = [ cosd(angle) -sind(angle) 0; sind(angle) cosd(angle) 0; 0 0 1];
+
+%get the tentacle points
+[tent_pnts final_set_info] = tentacle( CPs, k, t, boxes, 20); 
+
+%create a cap for the tentacle 
+%grab the final set of tentacle points 
+last_set = tent_pnts(end,:,:);
+
+%and the final normal vector, center and radius 
+last_norm = final_set_info(2,:); last_center = final_set_info(1,:); last_rad = final_set_info(3,1); 
+
+%the cap's first set will be the tentacle's last set
+cap_CPs(1,:,:) = last_set;
+
+
+%this cap will go the length of one unit in the plot and close 
+%need three co-linear control points at the end to close the tentacle with 
+%C1 continuity
+
+new_center = last_center + 0.5*last_norm; 
+
+%the first control point will match last_radius
+%cap_CPs(2,:,:) = gen_circle_cps(last_rad, new_center, n);
+
+%now reduce the radius to half its original value and repeat
+last_rad = last_rad*0.5;
+cap_CPs(2,:,:) = gen_circle_cps(last_rad, new_center, last_norm);
+
+%finally reduce the radius to zero
+cap_CPs(3,:,:) = gen_circle_cps(0, new_center, last_norm);
+
+
+%now setup the knots and degrees for each direction 
+p = 2; q = 2;
+uknots = [ 0 0 1 1]; 
+vknots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
+
+[a b c] = size(cap_CPs);
+%apply weights 
+for i = 1:a 
+    for j = 1:b
+        cap_CPsW(i,j,1:3) = (R*squeeze(cap_CPs(i,j,1:3))).*cap_CPs(i,j,end); 
+        cap_CPsW(i,j,4) = cap_CPs(i,j,end); 
+    end
+end
+
+
+%plot the cap as a surface 
+uints = 20; vints = 21; 
+u = linspace(0,1,uints); 
+v = linspace(0,1,vints);
+for i = 1:uints
+    for j = 1:vints
+        surf_pnts(i,j,:) = surf_de_Boor(cap_CPsW,q,p,vknots,uknots,v(j),u(i));
+        %remove weight
+        surf_pnts(i,j,1:3) = surf_pnts(i,j,1:3)./surf_pnts(i,j,end); 
+    end
+end
+
+
+%make the connection for the arm to the body
+bod_connection( tent_pnts, false, angle);
+
 
 
 %setup knot array
@@ -54,6 +112,12 @@ end
 ctrl_cage = tent_pnts;
 
 
-if (render) 
-    surf(surface(:,:,1),surface(:,:,2),surface(:,:,3))
+
+%concatenate arm surface points
+full_arm = [surface; surf_pnts];
+
+
+if(render)
+    surf(full_arm(:,:,1),full_arm(:,:,2),full_arm(:,:,3))
 end
+    
