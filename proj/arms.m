@@ -30,7 +30,7 @@ k = 3;
 t = [ 0 0 0 0.2 0.3 1 1 1];
 
 %this value should always be odd and (radial_intervals-1)%4 == 0
-radial_intervals = 21;
+radial_intervals = 41;
 
 for i = 1:8
     if ( i == 3)
@@ -119,7 +119,7 @@ tri_mat(2:end,1,:) = left_edge_points(2:end,:);
 for i = 2:10
     
     j_start = 2;
-    j_end = 12-i;
+    j_end = armpit_intervals+1-i;
     tri_mat(i,j_end,:) = right_edge_points(i,:);
     
     for j = j_start:j_end-1
@@ -137,8 +137,8 @@ for i = 2:10
 end
 
 
-for i = 2:11
-    for j = 13-i:11
+for i = 2:armpit_intervals
+    for j = armpit_intervals+2-i:armpit_intervals
         
         tri_mat(i,j,:) = [NaN NaN NaN];
         
