@@ -1,6 +1,6 @@
 
 
-function [ctrl_cage] = arm( CPs, t, k, boxes, render, angle)
+function [ctrl_cage, bod_conn_pnts] = arm( CPs, t, k, boxes, render, angle)
 
 %plot the curve as well (for verification)
 curve = bsplineCurve(CPs, k , t, 20); 
@@ -72,7 +72,7 @@ end
 
 
 %make the connection for the arm to the body
-bod_connection( tent_pnts, false, angle);
+bod_conn_pnts = bod_connection( tent_pnts, false, angle);
 
 
 

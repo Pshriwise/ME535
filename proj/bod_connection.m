@@ -1,5 +1,5 @@
 
-function bod_connection( cage, flip, angle )
+function bod_conn_pnts = bod_connection( cage, flip, angle )
 
 
     
@@ -76,5 +76,6 @@ for i = 1:a
     end
 end
 
+bod_conn_pnts = surface(:,:,:); 
 
 surf(surface(:,:,1),surface(:,:,2),surface(:,:,3))
