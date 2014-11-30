@@ -21,7 +21,7 @@ norm_vecs = [cosd(angles(:)) sind(angles(:)) 0*angles(:)];
 
 centers = norm_vecs.*body_radius;
 
-plot3(centers(:,1),centers(:,2),centers(:,3));
+%plot3(centers(:,1),centers(:,2),centers(:,3));
 %path of the first arm (first two points must align with normal vector out
 %of the body circle
 
@@ -30,13 +30,13 @@ k = 3;
 t = [ 0 0 0 0.2 0.3 1 1 1];
 
 %this value should always be odd and (radial_intervals-1)%4 == 0
-radial_intervals = 41;
+radial_intervals = 61;
 
-for i = 2:3
+for i = 1:8
     if ( i == 3)
-        [arm_cage, bod_conn_pnts] = arm( CPs, t, k, false, false, angles(i), radial_intervals);   
+        [arm_cage, bod_conn_pnts] = arm( CPs, t, k, false, true, angles(i), radial_intervals);   
     else
-        arm( CPs, t, k, false, false, angles(i), radial_intervals);   
+        arm( CPs, t, k, false, true, angles(i), radial_intervals);   
     end
 end
 
@@ -82,7 +82,7 @@ for i = 1:ints
     end
 end
 
-%surf(surface(:,:,1),surface(:,:,2),surface(:,:,3),gradient(surface(:,:,3)))
+surf(surface(:,:,1),surface(:,:,2),surface(:,:,3),gradient(surface(:,:,3)))
 
 
 
