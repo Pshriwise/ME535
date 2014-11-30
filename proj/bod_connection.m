@@ -1,5 +1,5 @@
 
-function bod_conn_pnts = bod_connection( cage, flip, angle, rad_ints )
+function bod_conn_pnts = bod_connection( cage, flip, angle, rad_ints, render, fileid )
 
 
     
@@ -78,4 +78,8 @@ end
 
 bod_conn_pnts = surface(:,:,:); 
 
-surf(surface(:,:,1),surface(:,:,2),surface(:,:,3))
+if (render)
+    tri = quadmat2tris(surface);
+    trisurf(tri,surface(:,:,1),surface(:,:,2),surface(:,:,3))
+    quadmat2stl(fileid, surface(:,:,1:3));
+end

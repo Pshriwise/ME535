@@ -6,9 +6,16 @@ addpath('../HW5/')
 clear all; 
 close all;
 clc;
+
+%open a file for the triangles
+fid = fopen('octo.stl','w');
+
+%create a solid header
+startsolidstl(fid, 'octo');
+
 %get the start points of the circle 
 figure();
-hold on; 
+hold on;
 xlabel('x');
 ylabel('y');
 zlabel('z');
@@ -30,13 +37,13 @@ k = 3;
 t = [ 0 0 0 0.2 0.3 1 1 1];
 
 %this value should always be odd and (radial_intervals-1)%4 == 0
-radial_intervals = 61;
+radial_intervals = 21;
 
 for i = 1:8
     if ( i == 3)
-        [arm_cage, bod_conn_pnts] = arm( CPs, t, k, false, true, angles(i), radial_intervals);   
+        [arm_cage, bod_conn_pnts] = arm( CPs, t, k, false, true, angles(i), radial_intervals, fid);   
     else
-        arm( CPs, t, k, false, true, angles(i), radial_intervals);   
+        arm( CPs, t, k, false, true, angles(i), radial_intervals, fid);   
     end
 end
 
@@ -82,8 +89,10 @@ for i = 1:ints
     end
 end
 
-surf(surface(:,:,1),surface(:,:,2),surface(:,:,3),gradient(surface(:,:,3)))
-
+tri = quadmat2tris(surface);
+trisurf(tri,surface(:,:,1),surface(:,:,2),surface(:,:,3),gradient(surface(:,:,3)))
+quadmat2stl(fid, surface(:,:,1:3));
+clear tri;
 
 
 %create rotation matrix 
@@ -172,3 +181,7 @@ end
 trisurf(tri,tri_mat(:,:,1),tri_mat(:,:,2),tri_mat(:,:,3))
 
 end
+
+
+endsolidstl(fid, 'octo')
+fclose(fid);

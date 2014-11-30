@@ -1,6 +1,6 @@
 
 
-function [ctrl_cage, bod_conn_pnts] = arm( CPs, t, k, boxes, render, angle, rad_ints)
+function [ctrl_cage, bod_conn_pnts] = arm( CPs, t, k, boxes, render, angle, rad_ints, fileid)
 
 %plot the curve as well (for verification)
 curve = bsplineCurve(CPs, k , t, 20); 
@@ -72,7 +72,7 @@ end
 
 
 %make the connection for the arm to the body
-bod_conn_pnts = bod_connection( tent_pnts, false, angle, rad_ints);
+bod_conn_pnts = bod_connection( tent_pnts, false, angle, rad_ints, render, fileid);
 
 
 
@@ -117,6 +117,12 @@ full_arm = [surface; surf_pnts];
 
 
 if(render)
-    surf(full_arm(:,:,1),full_arm(:,:,2),full_arm(:,:,3))
+    tri = quadmat2tris(surface);
+    trisurf(tri,surface(:,:,1),surface(:,:,2),surface(:,:,3))
+    quadmat2stl(fileid, surface(:,:,1:3));
+    tri = quadmat2tris(surf_pnts);
+    trisurf(tri,surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3))
+    quadmat2stl(fileid, surf_pnts(:,:,1:3));
+
 end
     
