@@ -1,5 +1,5 @@
 
-function bod_conn_pnts = bod_connection( cage, flip, angle )
+function bod_conn_pnts = bod_connection( cage, flip, angle, rad_ints )
 
 
     
@@ -64,12 +64,12 @@ end
 %show the surface points for this small segment
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 
-ints = 21;
-v_vec = linspace(0,1,ints); 
+
+v_vec = linspace(0,1,rad_ints); 
 [a b c] = size(adj_surf_CPsW);
-surface = zeros(a,ints,c);
+surface = zeros(a,rad_ints,c);
 for i = 1:a
-    for j = 1:ints
+    for j = 1:rad_ints
         surface(i,j,:) = de_Boor(squeeze(adj_surf_CPsW(i,:,:)),2,circle_knots,v_vec(j),-1);
         %remove weights
         surface(i,j,:) = surface(i,j,:)./surface(i,j,end);

@@ -1,6 +1,6 @@
 
 
-function [ctrl_cage, bod_conn_pnts] = arm( CPs, t, k, boxes, render, angle)
+function [ctrl_cage, bod_conn_pnts] = arm( CPs, t, k, boxes, render, angle, rad_ints)
 
 %plot the curve as well (for verification)
 curve = bsplineCurve(CPs, k , t, 20); 
@@ -59,11 +59,11 @@ end
 
 
 %plot the cap as a surface 
-uints = 20; vints = 21; 
+uints = 20; 
 u = linspace(0,1,uints); 
-v = linspace(0,1,vints);
+v = linspace(0,1,rad_ints);
 for i = 1:uints
-    for j = 1:vints
+    for j = 1:rad_ints
         surf_pnts(i,j,:) = surf_de_Boor(cap_CPsW,q,p,vknots,uknots,v(j),u(i));
         %remove weight
         surf_pnts(i,j,1:3) = surf_pnts(i,j,1:3)./surf_pnts(i,j,end); 
@@ -72,7 +72,7 @@ end
 
 
 %make the connection for the arm to the body
-bod_conn_pnts = bod_connection( tent_pnts, false, angle);
+bod_conn_pnts = bod_connection( tent_pnts, false, angle, rad_ints);
 
 
 
@@ -97,12 +97,11 @@ end
 
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 
-ints = 21; 
-u_vec= linspace(0,1,ints);
-v_vec= linspace(0,1,ints);
-surface = zeros(a,ints,c);
+ 
+v_vec= linspace(0,1,rad_ints);
+surface = zeros(a,rad_ints,c);
 for i = 1:a
-    for j = 1:ints
+    for j = 1:rad_ints
 			surface(i,j,:) =  de_Boor(squeeze(tent_pntsW(i,:,:)),2,circle_knots,v_vec(j),-1);
             %reduce weight
             surface(i,j,:) = surface(i,j,:)./surface(i,j,end);

@@ -29,12 +29,14 @@ CPs = [centers(1,:); centers(1,:)+norm_vecs(1,:); centers(1,:)+2*norm_vecs(1,:);
 k = 3;
 t = [ 0 0 0 0.2 0.3 1 1 1];
 
+%this value should always be odd and (radial_intervals-1)%4 == 0
+radial_intervals = 21;
 
-for i = 2:3
+for i = 1:8
     if ( i == 3)
-        [arm_cage, bod_conn_pnts] = arm( CPs, t, k, false, true, angles(i));   
+        [arm_cage, bod_conn_pnts] = arm( CPs, t, k, false, true, angles(i), radial_intervals);   
     else
-        arm( CPs, t, k, false, true, angles(i));   
+        arm( CPs, t, k, false, true, angles(i), radial_intervals);   
     end
 end
 
@@ -69,11 +71,12 @@ end
 q = 2;
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 ints = 20;
+rad_ints = 4*(radial_intervals-1)+1;
 
 for i = 1:ints
-    for j = 1:81 
+    for j = 1:rad_ints
         u = (i-1)/(ints-1);
-        v = (j-1)/(81-1);
+        v = (j-1)/(rad_ints-1);
       surface(i,j,:) = surf_de_Boor(CP_arrayW,p,q,tu,circle_knots,u,v);
       surface(i,j,:) = surface(i,j,:)./surface(i,j,end);  %remove weights
     end
@@ -88,10 +91,11 @@ R = [ cosd(-45) -sind(-45) 0; sind(-45) cosd(-45) 0; 0 0 1];
 
 %now create a triangular patch to close the body 
 
-top_edge_points = squeeze(surface(end,1:11,1:3));
+armpit_intervals = 1+(radial_intervals-1)/2;
+top_edge_points = squeeze(surface(end,1:armpit_intervals,1:3));
 
-
-right_edge_points = horzcat(bod_conn_pnts(end,16:21,1:3),bod_conn_pnts(end,1:5,1:3));
+re_indices = [ 1+(radial_intervals-1)*3/4 radial_intervals 1 (radial_intervals-1)/4];
+right_edge_points = horzcat(bod_conn_pnts(end,re_indices(1):re_indices(2),1:3),bod_conn_pnts(end,re_indices(3):re_indices(4),1:3));
 
 [a b c] = size(right_edge_points); 
 for i = 1:a 
@@ -101,11 +105,13 @@ for i = 1:a
 end
 
 right_edge_points = squeeze(right_edge_points); 
-left_edge_points = squeeze(horzcat(bod_conn_pnts(end, 7:11, 1:3),bod_conn_pnts(end,11:16,1:3)));
+
+le_indices = [ 1+(radial_intervals-1)/4 1+(radial_intervals-1)*(3/4)];
+left_edge_points = squeeze(horzcat(bod_conn_pnts(end,le_indices(1):le_indices(2),1:3)));
 left_edge_points = flipud(left_edge_points);
 %create a matrix for these values 
 
-tri_mat = zeros(11,11,3);
+tri_mat = zeros(armpit_intervals,armpit_intervals,3);
 
 tri_mat(1,:,:) = top_edge_points;
 tri_mat(2:end,1,:) = left_edge_points(2:end,:);
@@ -139,4 +145,19 @@ for i = 2:11
     end
 end
 
+for k = 1:8
+%create rotation matrix 
+R = [ cosd(angles(k)) -sind(angles(k)) 0; sind(angles(k)) cosd(angles(k)) 0; 0 0 1];
+
+%rotate and plot
+for i = 1:armpit_intervals
+    for j = 1:armpit_intervals
+        tri_mat(i,j,:) = R*squeeze(tri_mat(i,j,:));
+    end
+end
+
+        
+        
 surf(tri_mat(:,:,1),tri_mat(:,:,2),tri_mat(:,:,3))
+
+end
