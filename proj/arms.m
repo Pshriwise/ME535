@@ -130,8 +130,18 @@ for i = 2:10
 end
 
 %triangle indices 
-for i = 2:10
-    for j = 2:12-i
+num_tris=0;
+for i = 2:armpit_intervals-1
+    %create a triangle for each new row
+    num_tris= num_tris+1;
+    tri(num_tris,:) = [ (i-1)*armpit_intervals + j (i-2)*armpit_intervals + j (i-2)*armpit_intervals + (j+1) ]; 
+    for j = 2:armpit_intervals+1-i
+        num_tris = num_tris +1;
+        tri(num_tris,:) = [ (i-1)*armpit_intervals + j (i-2)*armpit_intervals + j (i-1)*armpit_intervals + (j-1)];
+        
+        num_tris = num_tris +1;
+        tri(num_tris,:) = [ (i-1)*armpit_intervals + j (i-2)*armpit_intervals + j (i-2)*armpit_intervals + (j+1)];
+        
        % tri(i-1+j-1,:) = 
     end
 end
@@ -158,6 +168,6 @@ end
 
         
         
-surf(tri_mat(:,:,1),tri_mat(:,:,2),tri_mat(:,:,3))
+trisurf(tri,tri_mat(:,:,1),tri_mat(:,:,2),tri_mat(:,:,3))
 
 end
