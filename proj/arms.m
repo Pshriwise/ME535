@@ -179,7 +179,7 @@ end
         
         
 trisurf(tri,tri_mat(:,:,1),tri_mat(:,:,2),tri_mat(:,:,3))
-
+trimat2stl(fid, tri_mat);
 end
 
 
