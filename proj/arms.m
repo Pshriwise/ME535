@@ -37,7 +37,7 @@ k = 3;
 t = [ 0 0 0 0.2 0.3 1 1 1];
 
 %this value should always be odd and (radial_intervals-1)%4 == 0
-radial_intervals = 21;
+radial_intervals = 81;
 
 for i = 1:8
     if ( i == 3)
@@ -50,7 +50,7 @@ end
 
 %Body CPs
 
-CPs = [ 0 0 17; 1 0 17; 2 0 17; 7 0 12; 3 0 5; 2.592 0 1.278];
+CPs = [ 0 0 17; 1 0 17; 2 0 17; 7 0 12; 3 0 5; 2.647 0 1.273];
 
 p = 3;
 
@@ -77,7 +77,7 @@ end
 
 q = 2;
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
-ints = 20;
+ints = 100;
 rad_ints = 4*(radial_intervals-1)+1;
 
 for i = 1:ints
@@ -91,7 +91,7 @@ end
 
 tri = quadmat2tris(surface);
 trisurf(tri,surface(:,:,1),surface(:,:,2),surface(:,:,3),gradient(surface(:,:,3)))
-quadmat2stl(fid, surface(:,:,1:3));
+quadmat2stl(fid, fliplr(surface(:,:,1:3)));
 clear tri;
 
 
@@ -179,6 +179,7 @@ end
         
         
 trisurf(tri,tri_mat(:,:,1),tri_mat(:,:,2),tri_mat(:,:,3))
+
 trimat2stl(fid, tri_mat);
 end
 

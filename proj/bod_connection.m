@@ -81,5 +81,5 @@ bod_conn_pnts = surface(:,:,:);
 if (render)
     tri = quadmat2tris(surface);
     trisurf(tri,surface(:,:,1),surface(:,:,2),surface(:,:,3))
-    quadmat2stl(fileid, surface(:,:,1:3));
+    quadmat2stl(fileid, fliplr(surface(:,:,1:3)));
 end
