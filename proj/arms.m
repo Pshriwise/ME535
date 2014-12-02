@@ -37,7 +37,7 @@ k = 3;
 t = [ 0 0 0 0.2 0.3 1 1 1];
 
 %this value should always be odd and (radial_intervals-1)%4 == 0
-radial_intervals = 81;
+radial_intervals = 101;
 
 for i = 1:8
     if ( i == 3)
@@ -50,7 +50,7 @@ end
 
 %Body CPs
 
-CPs = [ 0 0 17; 1 0 17; 2 0 17; 7 0 12; 3 0 5; 2.647 0 1.273];
+CPs = [ 0 0 17; 1 0 17; 2 0 17; 7 0 12; 3 0 5; 2.6474 0 1.2726];
 
 p = 3;
 
@@ -77,7 +77,7 @@ end
 
 q = 2;
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
-ints = 100;
+ints = 120;
 rad_ints = 4*(radial_intervals-1)+1;
 
 for i = 1:ints
@@ -125,7 +125,7 @@ tri_mat = zeros(armpit_intervals,armpit_intervals,3);
 tri_mat(1,:,:) = top_edge_points;
 tri_mat(2:end,1,:) = left_edge_points(2:end,:);
 
-for i = 2:10
+for i = 2:armpit_intervals-1
     
     j_start = 2;
     j_end = armpit_intervals+1-i;
