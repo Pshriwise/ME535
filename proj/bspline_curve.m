@@ -1,6 +1,4 @@
 
-
-
 function [ pnts ] = bspline_curve( CPs, k, t, tol)
 %Function for returning bspline points with a faceting tolerance
 %CPs - control points of the curve

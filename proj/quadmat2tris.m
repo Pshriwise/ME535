@@ -1,7 +1,8 @@
 function [tri] = quadmat2tris( mat ) 
+% Returns the triangle indexing for the matrix of points, mat, in a
+% vectorized format
 
 % mat - a matrix of points for a surface
-
 [ a b c ] = size(mat);
 
 num_tris = 0;

@@ -21,12 +21,8 @@ end
 if [ 0 -1 0] == n
     n = [ 1e-7 -1 0]
 end
-%get a normal vector (any normal vector for now)
-% ax1 = normal(:).'/norm(normal);
-% ax23 = null(ax1).';
-% axes = [ax1;ax23];
-% perp = axes(2,:);
 
+%preset orthogonal vector to n
 dum = [ -n(3) 0 n(1) ];
 
 perp = cross(dum, n);

@@ -1,6 +1,17 @@
 
 
 function [c c1 c2] = de_Boor_all( CPs, k, t, u, index) 
+% Returns the point on the curve, c, the first derivative of the curve, c1,
+% and the second derivative of the curve, c2 for a given bspline curve. 
+% Note: This will not return the correct values of derivatives if using weighted CPs
+% (NURBS)
+% CPs - control points of the curve (any dim)
+% k - degree of the bspline curve 
+% t - knot vector for the curve 
+% u - paramter value for the point to be returned
+% index - optional argument indicating the knot vector index that u lies
+% upon. If this is passed in as -1, the function will determine the index
+% on its own.
 
 %get the size of the knot vector
 [a b]= size(t);
@@ -11,10 +22,9 @@ if ( u < t(k-1) || u > t(b-(k-1)))
 end
 
 
-%find the interval value using the knot vector and u
+%find the interval value using the knot vector and u if not provided
 if( -1 == index) 
     
-%index = -1;
 for i = 1:b-1
     if( u >= t(i) & u<= t(i+1) & t(i) ~= t(i+1))
         index = i;
@@ -24,8 +34,8 @@ end
 
 end
 
-assert( index >=0 );
-%adjust index
+assert( index >=0 ); %make sure index is valid
+%adjust index using degree
 index = index -(k-1);
 %get the points needed to define the curve at u
 base = CPs(index:index+k,:);

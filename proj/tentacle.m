@@ -1,8 +1,13 @@
 %script for plotting circles from 1 to Zero
-function [tent_pnts, final_set_info] = tentacle( path_CPs, k, t, plot, ints )
+function [tent_pnts, final_set_info] = tentacle( path_CPs, k, t, plot )
+% Returns the control cage for an octopus tentable following a bspline
+% path. 
+
 % CPs - tentacle path control points
 % k - degree of path
 % t - knot vector for the path 
+% plot - flag for plotting control cage 
+
 
 %final set information will be returned as [center, norm, radius 0 0]
 [m,d] = size(path_CPs);
@@ -11,30 +16,20 @@ if (plot)
 figure(1);
 hold on;
 end
-%arm path
-%P = [ 1 2 5; 3 6 8; 5 3 9; 10 8 10];
-%t = [ 0 0 0 1 1 1];
-%k = 3;
-n = 20;
-% there should be ints sets of points each having n points in 4 sections
-% and in 3 dimesnions
-tol = 0.05;
-index = 1;
-u = t(k);
 
+%set the tolerance for discretizing the arm path
+tol = 0.05;
+
+u = t(k); % set u to the beginning of the curve
+
+index = 1;
 %add the first point
 center = de_Boor(path_CPs,k,t,u,-1);
     n = de_Boor_deriv(path_CPs, k, t, u, -1);
     n = n./norm(n);
     pnts = gen_circle_cps(get_circle_rad(u), center, n);
-    %apply weights
-%    w = [ 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1];
-%    for i = 1:9
-%        pnts(i,:) = pnts(i,:)*w(i);
-%    end
     
     if(plot)
-    %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
     plot3(pnts(:,1),pnts(:,2),pnts(:,3), 'black-')
     end
     tent_pnts(index,:,:)= pnts;
@@ -48,24 +43,19 @@ while true
     n = de_Boor_deriv(path_CPs, k, t, u, -1);
     n = n./norm(n);
     pnts = gen_circle_cps(get_circle_rad(u), center, n);
-    %apply weights
-%    w = [ 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1 sqrt(2)/2 1];
- %   for i = 1:9
-  %      pnts(i,:) = pnts(i,:)*w(i);
-   % end
+    
     if(plot)
-    %scatter3(pnts(:,1),pnts(:,2),pnts(:,3))
     plot3(pnts(:,1),pnts(:,2),pnts(:,3), 'black-')
     end
+    
     index = index + 1; 
     tent_pnts(index,:,:)= pnts;
     
-    if ( u == t(m) )
+    if ( u == t(m) ) %exit loop when we get to the end of the curve
         break; 
     end
-   
-    
+
 end
 
-%return final set information
+%return final set information for use in creating the shoulder
 final_set_info = [center; n; [get_circle_rad(u) 0 0]];

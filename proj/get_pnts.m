@@ -1,6 +1,11 @@
 function [pnts, knots] = get_pnts( base, sub_knots, u, num_pnts )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+% Interpolates the base points using the sub_knot vector and a u-value to
+% return a given number of points for use in bspline curve calculations 
+
+% base - control points 
+% sub_knots - knot vector associated with the given control points 
+% u - parameter value used for interpolation 
+% num_pnts - number of points at which the recursion should stop
 
 
 [a b] = size(base);

@@ -1,6 +1,13 @@
 
-function bod_conn_pnts = bod_connection( cage, flip, angle, rad_ints, render, fileid )
-
+function shoulder_pnts = shoulder( cage, angle, rad_ints, render, fileid )
+% Creates a connection from the arm to the body of the octopus based on the
+% control cage of the arm surface
+% cage - the control cage of the arm (used to ensure C1 continuity with the
+% shoulder
+% angle - angle of rotation about the z-axis (in degrees)
+% rad_ints - number of radial intervals to use in the shoulder 
+% render - flag for rendering of the sholder
+% fileid - file id to write to for .stl conversion of surface
 
     
 %snag the first couple control point sets
@@ -76,7 +83,7 @@ for i = 1:a
     end
 end
 
-bod_conn_pnts = surface(:,:,:); 
+shoulder_pnts = surface(:,:,:); 
 
 if (render)
     tri = quadmat2tris(surface);

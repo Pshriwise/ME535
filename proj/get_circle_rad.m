@@ -1,5 +1,11 @@
 function [radius] = get_circle_rad(u, show)
-    
+% Returns the value of a circle radius for a pre-determined profile    
+
+% u - parameter to return the radius for 
+% show - flag for plotting of the radial profile and its CPs 
+
+
+%hard-coded profile
     start_rad = 1;
     r_vals = [ 1; 0.95; 0.69; 0.4; 0.1];
     u_vals = [ 0; 0.08;0.18; 0.75; 1 ];
@@ -13,6 +19,7 @@ function [radius] = get_circle_rad(u, show)
     radius = de_Boor(CPs,k,knots,u,-1);
     radius = start_rad*radius(2);
     
+    % if nothing is passed for show, don't plot
     if nargin < 2
         show = false; 
     end

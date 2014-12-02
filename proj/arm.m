@@ -1,6 +1,17 @@
 
 
-function [ctrl_cage, bod_conn_pnts] = arm( CPs, t, k, boxes, render, angle, rad_ints, fileid)
+function [ctrl_cage, shoulder_pnts] = arm( CPs, t, k, boxes, render, angle, rad_ints, fileid)
+% Creates an octopus arm defined by a bspline curve. 
+
+% CPs - control points of the bspline curve the arm should follow
+% t - knots for the bspline curve
+% k - degree of the bspline curve
+% boxes - flag for whether or not to plot the control points of the arm
+% surface 
+% render - flag for rendering of the arm 
+% angle - angle of rotation for the arm about the z-axis 
+% rad_ints - number of radial intervals for the arm 
+% fileid - a file handle for writing the arm mesh to .stl 
 
 %plot the curve as well (for verification)
 curve = bsplineCurve(CPs, k , t, 20); 
@@ -13,7 +24,7 @@ end
 R = [ cosd(angle) -sind(angle) 0; sind(angle) cosd(angle) 0; 0 0 1];
 
 %get the tentacle points
-[tent_pnts final_set_info] = tentacle( CPs, k, t, boxes, 20); 
+[tent_pnts final_set_info] = tentacle( CPs, k, t, boxes); 
 
 %create a cap for the tentacle 
 %grab the final set of tentacle points 
@@ -72,7 +83,7 @@ end
 
 
 %make the connection for the arm to the body
-bod_conn_pnts = bod_connection( tent_pnts, false, angle, rad_ints, render, fileid);
+shoulder_pnts = shoulder( tent_pnts, angle, rad_ints, render, fileid);
 
 
 
@@ -87,7 +98,6 @@ for i = 1:a
 end
 
 %add weights
- 
 for i = 1:a
     for j = 1:b
         tent_pntsW(i,j,1:c-1) = squeeze(tent_pnts(i,j,1:3)).* tent_pnts(i,j,end);
@@ -95,26 +105,24 @@ for i = 1:a
     end
 end
 
+%setup circle knots for a circle w/ four sections
 circle_knots = [ 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 ];
 
- 
+%containers for the v-values and the surface points 
 v_vec= linspace(0,1,rad_ints);
 surface = zeros(a,rad_ints,c);
 for i = 1:a
     for j = 1:rad_ints
 			surface(i,j,:) =  de_Boor(squeeze(tent_pntsW(i,:,:)),2,circle_knots,v_vec(j),-1);
-            %reduce weight
+            %remove weights
             surface(i,j,:) = surface(i,j,:)./surface(i,j,end);
     end
 end
 
 ctrl_cage = tent_pnts;
 
-
-
 %concatenate arm surface points
-full_arm = [surface; surf_pnts];
-
+%full_arm = [surface; surf_pnts];
 
 if(render)
     tri = quadmat2tris(surface);
@@ -123,6 +131,5 @@ if(render)
     tri = quadmat2tris(surf_pnts);
     trisurf(tri,surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3))
     quadmat2stl(fileid, surf_pnts(:,:,1:3));
-
 end
     
