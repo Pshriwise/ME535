@@ -85,5 +85,68 @@ disp('The length of this curve is:');
 length = integral(ds,0,1)
 
 
+fprintf('-----------------------------------------------------\n\n');
+
+fprintf('--------------------- PROBLEM 3 -------------------------\n');
+
+clear all;
+
+%setup the control points 
+CPs(:,1,:) = [ 0 0 0; 3 0 3; 6 0 3; 9 0 0];
+CPs(:,2,:) = [ 0 2 2; 3 2 5; 6 2 5; 9 2 2];
+CPs(:,3,:) = [ 0 4 0; 3 4 3; 6 4 3; 9 4 0];
+
+
+%cubic Bezier matrix 
+B3 = [ 1 0 0 0; -3 3 0 0; 3 -6 3 0; -1 3 -3 1];
+
+%quadratic Bezier matrix
+B2 = [ 1 0 0; -2 2 0; 1 -2 1];
+
+syms u; syms v;
+
+U = [ 1 u u^2 u^3 ];
+
+V = [ 1 v v^2];
+
+%Form the curve polynomial
+curve(:,1) = U*B3*CPs(:,:,1)*(V*B2).';
+curve(:,2) = U*B3*CPs(:,:,2)*(V*B2).';
+curve(:,3) = U*B3*CPs(:,:,3)*(V*B2).';
+
+%setup u(t) and v(t) 
+syms t;
+ut = 0.5 + 0.25*cos(t);
+vt = 0.5 + 0.25*sin(t);
+
+
+%get the derivatives of u(t) and v(t) wrt t
+dudt = diff(ut,t); 
+dvdt = diff(vt,t); 
+
+%differentiate the curve wrt u & v
+Pu = diff(curve,u); 
+Pv = diff(curve,v); 
+
+%Get the 1st fundamental form coefficients
+E = dot(Pu,Pu); 
+F = dot(Pu,Pv); 
+G = dot(Pv,Pv); 
+
+%now substitute in the paths wrt t for u and v
+E = subs(E,[u,v],[ut,vt]); 
+F = subs(F,[u,v],[ut,vt]); 
+G = subs(G,[u,v],[ut,vt]); 
+
+%setup the length integral 
+t_vec = linspace(0,2*pi,60); 
+ds = sqrt(E*(dudt^2) + 2*F*(dudt*dvdt) + G*(dvdt^2));
+ds = @(t_vec) eval(subs(ds,t,t_vec));
+
+disp('The length of the curve is:');
+Length = integral(ds,0,2*pi)
+
+
+
 
 
