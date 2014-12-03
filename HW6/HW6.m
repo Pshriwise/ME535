@@ -134,17 +134,43 @@ F = dot(Pu,Pv);
 G = dot(Pv,Pv); 
 
 %now substitute in the paths wrt t for u and v
-E = subs(E,[u,v],[ut,vt]); 
-F = subs(F,[u,v],[ut,vt]); 
-G = subs(G,[u,v],[ut,vt]); 
+%E = subs(E,[u,v],[ut,vt]); 
+%F = subs(F,[u,v],[ut,vt]); 
+%G = subs(G,[u,v],[ut,vt]); 
 
 %setup the length integral 
 t_vec = linspace(0,2*pi,60); 
 ds = sqrt(E*(dudt^2) + 2*F*(dudt*dvdt) + G*(dvdt^2));
+ds = subs(ds,[u,v],[ut,vt]); %substitute our parametric path for u and v
 ds = @(t_vec) eval(subs(ds,t,t_vec));
 
 disp('The length of the curve is:');
 Length = integral(ds,0,2*pi)
+
+%setup the area integral 
+
+%redefine u(t) and v(t) to be u(r,t) and v(r,t) 
+
+syms r;
+utr = 0.5 + r*cos(t); 
+vtr = 0.5 + r*cos(t);
+
+dA = sqrt(E*G-F^2)*r; % r is to account for change of variables dudv -> rdrdt
+dA = subs(dA,[u,v],[utr,vtr]); %substitute our parametric path for u and v
+
+%define a new vector for r
+r_vec = linspace(0,0.25,60);
+
+dA = @(t_vec,r_vec) eval(subs(dA,{t,r},{t_vec,r_vec}));
+
+Area = dblquad(dA, 0, 2*pi, 0, 0.25)
+
+
+
+
+
+
+
 
 
 
