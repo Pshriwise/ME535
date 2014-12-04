@@ -166,6 +166,103 @@ dA = @(t_vec,r_vec) eval(subs(dA,{t,r},{t_vec,r_vec}));
 Area = dblquad(dA, 0, 2*pi, 0, 0.25)
 
 
+fprintf('-----------------------------------------------------\n\n');
+
+fprintf('--------------------- PROBLEM 4 -------------------------\n');
+
+clear all; 
+
+%define the curve
+syms u; syms v; 
+
+%set the control points
+P(1,1,:) = [0 0 0];
+P(2,1,:) = [2 0 0];
+P(1,2,:) = [0 2 0];
+P(2,2,:) = [1 2 1];
+
+%define the surface
+S = squeeze((1-u)*(1-v)*P(1,1,:)+u*(1-v)*P(2,1,:)+v*(1-u)*P(1,2,:)+u*v*P(2,2,:));
+
+%get the derivatives we need for the fundamental coeffs
+Su = diff(S,u); 
+Sv = diff(S,v); 
+
+Suu = diff(Su,u); 
+Suv = diff(Su,v); 
+Svv = diff(Sv,v); 
+
+%first fundamental form coeffs
+E = dot(Su,Su); 
+F = dot(Su,Sv); 
+G = dot(Sv,Sv); 
+
+%second fundamental form coeffs
+n = cross(Su,Sv); 
+n = n./norm(n); 
+
+L = dot(n,Suu); 
+M = dot(n,Suv); 
+N = dot(n,Svv); 
+
+%setup matrices to determine principal curvatures (eigen values) 
+
+FI = [ E F; F G]; FII = [ L M; M N];
+
+syms k; 
+A = det(FII -k*FI); 
+
+%now substitute in our values of u and v 
+A = subs(A,[u,v],[0.5,0.5]);
+
+disp('The principal curvatures are:')
+k = eval(solve(A,k,0))
+
+fprintf('-----------------------------------------------------\n\n');
+
+fprintf('--------------------- PROBLEM 5 -------------------------\n');
+ 
+clear all; 
+
+%setup the control points 
+CPs(:,1,:) = [ 0 0 0; 3 0 3; 6 0 3; 9 0 0];
+CPs(:,2,:) = [ 0 2 2; 3 2 5; 6 2 5; 9 2 2];
+CPs(:,3,:) = [ 0 4 0; 3 4 3; 6 4 3; 9 4 0];
+
+
+%cubic Bezier matrix 
+B3 = [ 1 0 0 0; -3 3 0 0; 3 -6 3 0; -1 3 -3 1];
+
+%quadratic Bezier matrix
+B2 = [ 1 0 0; -2 2 0; 1 -2 1];
+
+syms u; syms v;
+
+U = [ 1 u u^2 u^3 ];
+
+V = [ 1 v v^2];
+
+%Form the curve polynomial
+S(:,1) = U*B3*CPs(:,:,1)*(V*B2).';
+S(:,2) = U*B3*CPs(:,:,2)*(V*B2).';
+S(:,3) = U*B3*CPs(:,:,3)*(V*B2).';
+
+%define our iso-curve
+C = subs(S,u,0.5); 
+
+%get derivative (should give our tangent vector as well; 
+Cv = diff(C,v); 
+tan_vec = eval(Cv,0.5); 
+
+
+
+
+
+
+
+
+fprintf('-----------------------------------------------------\n\n');
+
 
 
 
