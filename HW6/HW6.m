@@ -1,6 +1,7 @@
 
 
 clear all; 
+close all;
 clc; 
 
 fprintf('---------------------- PROBLEM 1 -----------------------\n');
@@ -33,6 +34,7 @@ curvature
 curve = bspline_curve(CPs, k, t, 0.1);
 
 figure();
+grid on;
 hold on;
 h1 = plot3(CPs(:,1),CPs(:,2),CPs(:,3),'redsquare');
 plot3(CPs(:,1),CPs(:,2),CPs(:,3),'black');
@@ -50,7 +52,7 @@ h4 = plot3(norm_pnts(:,1),norm_pnts(:,2),norm_pnts(:,3),'red');
 h5 = plot3(binorm_pnts(:,1),binorm_pnts(:,2),binorm_pnts(:,3),'black'); 
 
 legend([h1 h2 h3 h4 h5],'Control Points','Curve','Tangent Vector','Normal Vector','Bi-normal Vector');
-
+xlabel('x'); ylabel('y'); zlabel('z');
 fprintf('-----------------------------------------------------\n\n');
 
 fprintf('--------------------- PROBLEM 2 -------------------------\n');
@@ -84,6 +86,17 @@ ds = @(u_vec) eval(subs(ds,u,u_vec));
 disp('The length of this curve is:');
 length = integral(ds,0,1)
 
+figure();
+grid on;
+hold on; 
+%Plot the curve 
+k = 3; 
+t = [ 0 0 0 1 1 1];
+curve = bspline_curve(CPs, k, t, 0.1);
+
+h2 = plot3(curve(:,1),curve(:,2),curve(:,3));
+legend(h2,'Bspline curve'); 
+xlabel('x'); ylabel('y'); zlabel('z');
 
 fprintf('-----------------------------------------------------\n\n');
 
@@ -95,7 +108,6 @@ clear all;
 CPs(:,1,:) = [ 0 0 0; 3 0 3; 6 0 3; 9 0 0];
 CPs(:,2,:) = [ 0 2 2; 3 2 5; 6 2 5; 9 2 2];
 CPs(:,3,:) = [ 0 4 0; 3 4 3; 6 4 3; 9 4 0];
-
 
 %cubic Bezier matrix 
 B3 = [ 1 0 0 0; -3 3 0 0; 3 -6 3 0; -1 3 -3 1];
@@ -109,10 +121,10 @@ U = [ 1 u u^2 u^3 ];
 
 V = [ 1 v v^2];
 
-%Form the curve polynomial
-curve(:,1) = U*B3*CPs(:,:,1)*(V*B2).';
-curve(:,2) = U*B3*CPs(:,:,2)*(V*B2).';
-curve(:,3) = U*B3*CPs(:,:,3)*(V*B2).';
+%Form the surface polynomial
+S(:,1) = U*B3*CPs(:,:,1)*(V*B2).';
+S(:,2) = U*B3*CPs(:,:,2)*(V*B2).';
+S(:,3) = U*B3*CPs(:,:,3)*(V*B2).';
 
 %setup u(t) and v(t) 
 syms t;
@@ -124,19 +136,14 @@ vt = 0.5 + 0.25*sin(t);
 dudt = diff(ut,t); 
 dvdt = diff(vt,t); 
 
-%differentiate the curve wrt u & v
-Pu = diff(curve,u); 
-Pv = diff(curve,v); 
+%differentiate the S wrt u & v
+Pu = diff(S,u); 
+Pv = diff(S,v); 
 
 %Get the 1st fundamental form coefficients
 E = dot(Pu,Pu); 
 F = dot(Pu,Pv); 
 G = dot(Pv,Pv); 
-
-%now substitute in the paths wrt t for u and v
-%E = subs(E,[u,v],[ut,vt]); 
-%F = subs(F,[u,v],[ut,vt]); 
-%G = subs(G,[u,v],[ut,vt]); 
 
 %setup the length integral 
 t_vec = linspace(0,2*pi,60); 
@@ -164,6 +171,36 @@ r_vec = linspace(0,0.25,60);
 dA = @(t_vec,r_vec) eval(subs(dA,{t,r},{t_vec,r_vec}));
 
 Area = dblquad(dA, 0, 2*pi, 0, 0.25)
+
+%plot the surface
+figure(); 
+hold on; 
+
+%get surface points
+ints = 40;
+u_vec = linspace(0,1,ints); 
+v_vec = linspace(0,1,ints); 
+for i = 1:ints
+    for j = 1:ints 
+        surf_pnts(i,j,:) = eval(subs(S,[u,v],[u_vec(i),v_vec(j)]));
+    end
+end
+
+%get curve points 
+t_vec = linspace(0,2*pi,ints);
+for i = 1:ints 
+    u_val = eval(subs(ut,t_vec(i)));
+    v_val = eval(subs(vt,t_vec(i)));
+
+    curve_pnts(i,:) = eval(subs(S,[u,v],[u_val,v_val]));
+end
+
+%plot the surface and the curve
+m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3))
+alpha(m,0);
+plot3(curve_pnts(:,1),curve_pnts(:,2),curve_pnts(:,3));
+
+
 
 
 fprintf('-----------------------------------------------------\n\n');
@@ -218,6 +255,25 @@ A = subs(A,[u,v],[0.5,0.5]);
 disp('The principal curvatures are:')
 k = eval(solve(A,k,0))
 
+
+%plot the surface
+figure(); 
+hold on; 
+
+%get surface points
+ints = 40;
+u_vec = linspace(0,1,ints); 
+v_vec = linspace(0,1,ints); 
+for i = 1:ints
+    for j = 1:ints 
+        surf_pnts(i,j,:) = eval(subs(S,[u,v],[u_vec(i),v_vec(j)]));
+    end
+end
+
+%plot the surface and the curve
+m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3))
+alpha(m,0);
+
 fprintf('-----------------------------------------------------\n\n');
 
 fprintf('--------------------- PROBLEM 5 -------------------------\n');
@@ -252,7 +308,17 @@ C = subs(S,u,0.5);
 
 %get derivative (should give our tangent vector as well; 
 Cv = diff(C,v); 
-tan_vec = eval(Cv,0.5); 
+tan_vec = eval(subs(Cv,0.5));
+disp('The tangent vector at v = 0.5 is:')
+tan_vec = tan_vec./norm(tan_vec)
+
+Cvv = diff(Cv,v); 
+norm_vec = eval(subs(Cvv,0.5));
+disp('The normal curvature at v = 0.5 is:') 
+norm_curvature = norm(norm_vec)
+
+disp('The normal vector at v = 0.5 is:') 
+norm_vec = norm_vec./norm_curvature
 
 
 
