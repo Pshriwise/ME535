@@ -9,4 +9,4 @@ report: figures
 
 clean: 
 	rm *.pdf *.aux *.log
-	rm -rf figs
+	rm -rf figures
