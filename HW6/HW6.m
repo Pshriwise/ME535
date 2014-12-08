@@ -4,6 +4,9 @@ clear all;
 close all;
 clc; 
 
+diary('HW6_out.txt')
+diary on
+
 fprintf('---------------------- PROBLEM 1 -----------------------\n');
 %Define the Curve 
 CPs = [ -2 -2 4; 2 -4 1; 6 -3 0; 10 0 0; 10 4 2];
@@ -53,6 +56,8 @@ h5 = plot3(binorm_pnts(:,1),binorm_pnts(:,2),binorm_pnts(:,3),'black');
 
 legend([h1 h2 h3 h4 h5],'Control Points','Curve','Tangent Vector','Normal Vector','Bi-normal Vector');
 xlabel('x'); ylabel('y'); zlabel('z');
+title('Problem 1: Curve tangent, normal, and bi-normal vectors.');
+
 fprintf('-----------------------------------------------------\n\n');
 
 fprintf('--------------------- PROBLEM 2 -------------------------\n');
@@ -97,6 +102,7 @@ curve = bspline_curve(CPs, k, t, 0.1);
 h2 = plot3(curve(:,1),curve(:,2),curve(:,3));
 legend(h2,'Bspline curve'); 
 xlabel('x'); ylabel('y'); zlabel('z');
+title('Problem 2: Curve plot.'); 
 
 fprintf('-----------------------------------------------------\n\n');
 
@@ -146,12 +152,12 @@ F = dot(Pu,Pv);
 G = dot(Pv,Pv); 
 
 %setup the length integral 
-t_vec = linspace(0,2*pi,60); 
+t_vec = linspace(0,2*pi,100); 
 ds = sqrt(E*(dudt^2) + 2*F*(dudt*dvdt) + G*(dvdt^2));
 ds = subs(ds,[u,v],[ut,vt]); %substitute our parametric path for u and v
 ds = @(t_vec) eval(subs(ds,t,t_vec));
 
-disp('The length of the curve is:');
+disp('The arc length of the curve is:');
 Length = integral(ds,0,2*pi)
 
 %setup the area integral 
@@ -166,10 +172,13 @@ dA = sqrt(E*G-F^2)*r; % r is to account for change of variables dudv -> rdrdt
 dA = subs(dA,[u,v],[utr,vtr]); %substitute our parametric path for u and v
 
 %define a new vector for r
-r_vec = linspace(0,0.25,60);
+r_vec = linspace(0,0.25,100);
 
 dA = @(t_vec,r_vec) eval(subs(dA,{t,r},{t_vec,r_vec}));
 
+%Using a double quadrature method, calculate the area
+% angle limit - zero to two pi
+% radius limit - zero to one quarter
 Area = dblquad(dA, 0, 2*pi, 0, 0.25)
 
 %plot the surface
@@ -199,9 +208,8 @@ end
 m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3));
 alpha(m,0);
 plot3(curve_pnts(:,1),curve_pnts(:,2),curve_pnts(:,3));
-
-
-
+xlabel('x'); ylabel('y'); zlabel('z');
+title('Problem 3: Curve defined on the Bezier surface.');
 
 fprintf('-----------------------------------------------------\n\n');
 
@@ -242,6 +250,7 @@ L = dot(n,Suu);
 M = dot(n,Suv); 
 N = dot(n,Svv); 
 
+
 %setup matrices to determine principal curvatures (eigen values) 
 
 FI = [ E F; F G]; FII = [ L M; M N];
@@ -254,7 +263,6 @@ A = subs(A,[u,v],[0.5,0.5]);
 
 disp('The principal curvatures are:')
 k = eval(solve(A,k,0))
-
 
 %plot the surface
 figure(); 
@@ -271,8 +279,10 @@ for i = 1:ints
 end
 
 %plot the surface
-m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3))
+m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3));
 alpha(m,0);
+xlabel('x'); ylabel('y'); zlabel('z');
+title('Problem 4: Bilinear Surface');
 
 fprintf('-----------------------------------------------------\n\n');
 
@@ -336,7 +346,7 @@ unit_normal = eval(subs(unit_norm,[u,v],[0.5,0.5]))
 
 %use the symbolic dot product set equal to zero then substitute 0.5 for u,v
 syms x; syms y; syms z
-plane = dot(unit_norm,[x y z]-Sv);
+plane = dot(unit_norm,[x y z]-(S-Sv));
 
 disp('The equation of the tangent plane at u=v=0.5 is:')
 
@@ -402,18 +412,19 @@ m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3));
 alpha(m,0);
 
 %plot Su and Sv 
-Su_vec = [eval(subs(S,[u,v],[0.5 0.5]));eval(subs(S+Su,[u,v],[0.5,0.5]))]
-Sv_vec = [eval(subs(S,[u,v],[0.5 0.5]));eval(subs(S+Sv,[u,v],[0.5,0.5]))]
+Su_vec = [eval(subs(S,[u,v],[0.5 0.5]));eval(subs(S+Su,[u,v],[0.5,0.5]))];
+Sv_vec = [eval(subs(S,[u,v],[0.5 0.5]));eval(subs(S+Sv,[u,v],[0.5,0.5]))];
 
-p1 = plot3(Su_vec(:,1),Su_vec(:,2),Su_vec(:,3),'blue')
-p2 = plot3(Sv_vec(:,1),Sv_vec(:,2),Sv_vec(:,3),'blue')
+p1 = plot3(Su_vec(:,1),Su_vec(:,2),Su_vec(:,3),'blue');
+p2 = plot3(Sv_vec(:,1),Sv_vec(:,2),Sv_vec(:,3),'black');
 
 legend([m,p1,p2],'Bezier Surface','Su','Sv')
-
+xlabel('x'); ylabel('y'); zlabel('z');
+title('Problem 5: Bezier Surface and tangent vectors, Su & Sv');
 
 fprintf('-----------------------------------------------------\n\n');
 
-
+diary off
 
 
 
