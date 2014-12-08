@@ -1,0 +1,33 @@
+
+
+
+\documentclass[twocolumn]{article}
+
+\begin{document}
+
+\author{Patrick Shriwise}
+\title{Preparation of Octopus Model for Introduction to Computational Geometry	}
+\maketitle
+
+
+\section{Concept}
+
+I thought that modeling this animal would provide a challenging yet reasonable goal for this project. The arms in particular were an intriguing problem. In my mind I envisioned something like the image in figure 1. 
+
+
+\section{Construction}
+
+In the end, the model was constructed of 25 revolved NURBS surfaces and 7 linear triangular patches. I encountered many unforeseen obstacles along the way, most of which deepened my understanding of computational geometry even if it limited my ability to add complexity to the model. 
+
+\subsection{Arms}
+
+The concept I had in mind for the arms was unfortunately only mildly successful. The idea was that using a radial profile described by a cubic bspline interpolation of 4 data points, I could construct an arm of the octopus which followed any path given to it, thus allowing me to create a model with complex arm shaping and the illusion of movement or interaction between arms as in the concept model. Making sure the arms would not overlap or intersect would then be left to inspection upon rendering the model. 
+
+I decided to approach this by first creating a radial profile which looked reasonably realistic. The next step was to supply a sample 3D bspline curve that one of the arms might follow. The path was then sampled at a set number of intervals (as might typically be done when plotting a curve). At each point on the curve path, the curve point along with the tangent unit vector was calculated using a De Boor method. I then wrote a function that would calculate a set of NURBS control points and weights for a circle given a center point, radius, and normal vector. Each sample point would then calculate its control points using its point, the tangent vector, and the radius returned from the radial profile function (using the u value for the curve point to obtain the radius). 
+
+\subsubsection{Tolerance Sampling}
+
+Very quickly it was clear that uniform sampling of an arm path was not sufficient to describe 
+
+This then allowed for a setup in which I could supply a path for an arm using a bspline curve and get a control cage for this arm. This control cage could then easily be used to render the surface representing the arm using a Cox De Boor algorithm. (Note: when rendering these surfaces, the u-direction was treated with a degree of one as the u-values along the arm path had already been interpolated at the appropriate degree for the respective arm path)
+\end{document}
