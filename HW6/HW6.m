@@ -196,7 +196,7 @@ for i = 1:ints
 end
 
 %plot the surface and the curve
-m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3))
+m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3));
 alpha(m,0);
 plot3(curve_pnts(:,1),curve_pnts(:,2),curve_pnts(:,3));
 
@@ -270,7 +270,7 @@ for i = 1:ints
     end
 end
 
-%plot the surface and the curve
+%plot the surface
 m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3))
 alpha(m,0);
 
@@ -317,14 +317,98 @@ norm_vec = eval(subs(Cvv,0.5));
 disp('The normal curvature at v = 0.5 is:') 
 norm_curvature = norm(norm_vec)
 
-disp('The normal vector at v = 0.5 is:') 
-norm_vec = norm_vec./norm_curvature
 
 
+%now for the normal vector, tangent plane and principal curvatures/directions 
+
+%differentiate in u and v
+Su = diff(S,u); 
+Sv = diff(S,v); 
+
+%get the unit normal
+unit_norm = cross(Su,Sv);
+unit_norm = unit_norm./norm(unit_norm); 
+
+disp('The unit normal at u = v= 0.5 is:')
+unit_normal = eval(subs(unit_norm,[u,v],[0.5,0.5]))
+
+%from Su and the unit normal we can calculate the tangent plane 
+
+%use the symbolic dot product set equal to zero then substitute 0.5 for u,v
+syms x; syms y; syms z
+plane = dot(unit_norm,[x y z]-Sv);
+
+disp('The equation of the tangent plane at u=v=0.5 is:')
+
+plane = eval(subs(plane,[u,v],[0.5,0.5]))
 
 
+%differentiate again in u,v
+Suu = diff(Su,u); 
+Suv = diff(Su,v); 
+Svv = diff(Sv,v); 
+
+%first fundamental coeffs
+E = dot(Su,Su);
+F = dot(Su,Sv);
+G = dot(Sv,Sv);
+
+%second fundamental coeffs
+n= unit_norm; 
+L = dot(n,Suu); 
+M = dot(n,Suv); 
+N = dot(n,Svv);
+
+%setup matrices
+FI = [ E F; F G]; FII = [ L M; M N];
+
+syms k; 
+A = FII -k*FI; 
+
+detA = subs(det(A),[u,v],[0.5,0.5]); 
+
+disp('The principal curvatures are:')
+K = eval(solve(detA,k,0))
 
 
+%now plug each k into A and solve for the eigen vectors
+
+A1 = eval(subs(A,[u,v,k],[0.5,0.5,K(1)]));
+
+A2 = eval(subs(A,[u,v,k],[0.5,0.5,K(2)]));
+
+disp('The principal directions are:')
+null(A1)
+disp('and')
+null(A2)
+
+
+%plot the surface
+figure(); 
+hold on; 
+
+%get surface points
+ints = 40;
+u_vec = linspace(0,1,ints); 
+v_vec = linspace(0,1,ints); 
+for i = 1:ints
+    for j = 1:ints 
+        surf_pnts(i,j,:) = eval(subs(S,[u,v],[u_vec(i),v_vec(j)]));
+    end
+end
+
+%plot the surface
+m = mesh(surf_pnts(:,:,1),surf_pnts(:,:,2),surf_pnts(:,:,3));
+alpha(m,0);
+
+%plot Su and Sv 
+Su_vec = [eval(subs(S,[u,v],[0.5 0.5]));eval(subs(S+Su,[u,v],[0.5,0.5]))]
+Sv_vec = [eval(subs(S,[u,v],[0.5 0.5]));eval(subs(S+Sv,[u,v],[0.5,0.5]))]
+
+p1 = plot3(Su_vec(:,1),Su_vec(:,2),Su_vec(:,3),'blue')
+p2 = plot3(Sv_vec(:,1),Sv_vec(:,2),Sv_vec(:,3),'blue')
+
+legend([m,p1,p2],'Bezier Surface','Su','Sv')
 
 
 fprintf('-----------------------------------------------------\n\n');
