@@ -8,5 +8,6 @@ report: figures
 	pdflatex report.tex
 
 clean: 
+	rm -rf ./figures
 	rm *.pdf *.aux *.log
-	rm -rf figures
+
