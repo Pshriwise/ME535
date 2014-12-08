@@ -1,10 +1,10 @@
 #!/bin/sh
 
 #input sharelink here. Example: https://drive.google.com/folderview?id=0B1g-MbiD2F6vdtOT92b3MoerO&usp=sharing
-SHARELINK="https://drive.google.com/folderview?id=idU&usp=sharing"
-DESTINATION="/full/path/to/folder"
+SHARELINK="https://drive.google.com/folderview?id=0B_lSrTE8wNeNNTJBTWF0T2U2THc&usp=sharing"
+DESTINATION="./figs/"
 # Change following to false when you don't want to delete files when they are missing from google drive. This can
-REMOVEFILES=true 
+REMOVEFILES=false 
 
 # Begin code
 
@@ -15,9 +15,9 @@ download () {
 
 	wgetoutput="`wget --no-check-certificate -qO- $url 2>&1`"
 	mkdir -p "$folder"
-	commands="$(echo "$wgetoutput" | grep -Eo '\[,,\"(.*?)\",,,,,\"(.*?)\"')"
-	missingfiles="$(find "$folder" -type f -depth 1 -print)"
-	missingdirectories="$(find "$folder" -type d -depth 1 -print)"
+	commands="$(echo "$wgetoutput" | grep -Eo '\[,,\"(.*?)\",\"(.*?)\"')"
+	#missingfiles="$(find "$folder" -type f -depth 1 -print)"
+	#missingdirectories="$(find "$folder" -type d -depth 1 -print)"
 
 	#Go to next
 
@@ -36,7 +36,7 @@ download () {
 	#Download files
 	echo "Downloading for $folder..." 1>&2;
 	for line in $commands; do
-		id=$(echo "$line" | grep -Eio '\"[0-9a-z]+-[0-9a-z]+\"' | cut -c 2- | sed s'/.$//')
+		id=$(echo "$line" | grep -Eio '[^"]*\"$' | cut -c 1- | grep -Eo '[^/]*/edit' | sed s'/.\{5\}$//')
 		name=$(echo "$line" | sed -e 's/\[,,\"//' | sed s/\".*//'')
 		file="$folder/$name"
 		cmd=$(echo "wget --no-check-certificate -nc -q --no-cookies -O \"$file\" \"https://docs.google.com/uc?export=download&id="$id"\"")
