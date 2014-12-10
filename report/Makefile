@@ -7,7 +7,10 @@ figures:
 report: figures
 	pdflatex report.tex
 
+slides: figures
+	pdflatex slides.tex
+
 clean: 
 	rm -rf ./figures
-	rm -f *.pdf *.aux *.log *.gz *.dvi *.nav *.snm *.out *.toc *~
+	rm -f slides.pdf report.pdf *.aux *.log *.gz *.dvi *.nav *.snm *.out *.toc *~
 
