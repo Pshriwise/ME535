@@ -33,9 +33,41 @@ The concept I had in mind for the arms was unfortunately only mildly successful.
 
 I decided to approach this by first creating a radial profile which looked reasonably realistic. The next step was to supply a sample 3D bspline curve that one of the arms might follow. The path was then sampled at a set number of intervals (as might typically be done when plotting a curve). At each point on the curve path, the curve point along with the tangent unit vector was calculated using a De Boor method. I then wrote a function that would calculate a set of NURBS control points and weights for a circle given a center point, radius, and normal vector. Each sample point would then calculate its control points using its point, the tangent vector, and the radius returned from the radial profile function (using the u value for the curve point to obtain the radius). 
 
-\subsubsection{Tolerance Sampling}
+This then allowed for a setup in which I could supply a path for an arm using a bspline curve and get a control cage for this arm. This control cage could then easily be used to render the surface representing the arm using a Cox De Boor algorithm. (Note: when rendering these surfaces, the u-direction was treated with a degree of one as the u-values along the arm path had already been interpolated at the appropriate degree for the respective arm path).
 
-Very quickly it was clear that uniform sampling of an arm path was not sufficient to describe 
+I then established the convention for this model that each arm-path would begin at equidistant points on a circle in the $z=0$ plane with tangent vectors parallel to that of the circle's curvature.
 
-This then allowed for a setup in which I could supply a path for an arm using a bspline curve and get a control cage for this arm. This control cage could then easily be used to render the surface representing the arm using a Cox De Boor algorithm. (Note: when rendering these surfaces, the u-direction was treated with a degree of one as the u-values along the arm path had already been interpolated at the appropriate degree for the respective arm path)
+\subsubsection{Discretization Tolerance}
+
+Very quickly it was clear that uniform sampling of an arm path was not sufficient to create a smooth representation of the Octopus' arm. I then decided to implement a rudimentary tolerance program which, given information needed to construct the curve, would provide the next parameter value for use such that the chord between the previous point and the next point would not vary from the curve by more than a given tolerance. The formula used to determine the maximum distance from a chord (facet) and the curve was:
+
+\begin{center}
+{err = $\frac{|(test\_pnt-previous\_pnt) \cdot chord|}{|chord \cdot chord|}$}
+\end{center}
+
+For each step, $du$, the range $u$ to $u+du$ was sampled for a new point which satisfied $err < tolerance$ over the entire range. If this error was larger than the allowed tolerance passed to the function, the parameter step size was reduced by the fraction:
+
+\begin{center}
+$ \frac{tolerance}{max\_err} $
+\end{center}
+
+\subsubsection{Arm Torsion}
+
+Due to the 
+\subsection{Body}
+
+The construction of the body was a relatively simple process. As I had already established the origins of the arms, I decided that the Body would consist of a revolved NURBS surface about the z-axis. The curve shape and control points were largely arbitrary as I was mostly looking for something that would give a realistic look. There were certain constrictions, however, so the body could be part of a closed volume. 
+
+\begin{center}
+\begin{itemize}
+\item The first control point must lie on the z-axis so that the body would be closed.
+\item Because the curve used was of degree 3, the next 3 control points were restricted to the same z-plane as the first point so that the top of the body would maintain an aesthetically pleasing $C1$ continuity.
+\item The final control point of the curve would restrict the body to meet the tops of the arms at a given radius and z value. (More on this later.)
+
+
+\subsection{Body Connections} 
+
+At this point in the construction,the body and arms are not connected. In order to form a closed volume, this problem must be rectified. To do so I developed a 
+\end{itemize}
+\end{center}
 \end{document}
