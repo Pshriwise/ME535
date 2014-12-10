@@ -31,7 +31,7 @@ In the end, the model was constructed of 25 revolved NURBS surfaces and 7 linear
 
 The concept I had in mind for the arms was unfortunately only mildly successful. The idea was that using a radial profile described by a cubic bspline interpolation of 4 data points, I could construct an arm of the octopus which followed any path given to it, thus allowing me to create a model with complex arm shaping and the illusion of movement or interaction between arms as in the concept model. Making sure the arms would not overlap or intersect would then be left to inspection upon rendering the model. 
 
-I decided to approach this by first creating a radial profile which looked reasonably realistic. The next step was to supply a sample 3D bspline curve that one of the arms might follow. The path was then sampled at a set number of intervals (as might typically be done when plotting a curve). At each point on the curve path, the curve point along with the tangent unit vector was calculated using a De Boor method. I then wrote a function that would calculate a set of NURBS control points and weights for a circle given a center point, radius, and normal vector. Each sample point would then calculate its control points using its point, the tangent vector, and the radius returned from the radial profile function (using the u value for the curve point to obtain the radius). 
+I decided to approach this by first creating a radial profile which looked reasonably realistic. The next step was to supply a sample 3D bspline curve that one of the arms might follow. The path was then sampled at a set number of intervals (as might typically be done when plotting a curve). At each point on the curve path, the curve point along with the tangent unit vector was calculated using a De Boor method. I then wrote a function that would calculate a set of NURBS control points and weights for a circle given a center point, radius, and bi-normal vector. Each sample point would then calculate its control points using its point, the radius returned from the radial profile function (using the u value for the curve point to obtain the radius), and the tangent vector at that curve point. 
 
 This then allowed for a setup in which I could supply a path for an arm using a bspline curve and get a control cage for this arm. This control cage could then easily be used to render the surface representing the arm using a Cox De Boor algorithm. (Note: when rendering these surfaces, the u-direction was treated with a degree of one as the u-values along the arm path had already been interpolated at the appropriate degree for the respective arm path).
 
@@ -53,7 +53,19 @@ $ \frac{tolerance}{max\_err} $
 
 \subsubsection{Arm Torsion}
 
-Due to the 
+In order to generate the control cage of a given arm, and in order to do this, the control points of a circle are generated at each sample point along the arm path using a center, radius and bi-normal vector as described above. In order to begin creating these control points, a vector orthogonal to the circle's bi-normal vector must be found. The method used to do this was sensitive to changes in the seed bi-normal vector from point to point. This caused control points to be generated in different orders than expected by prior sets of control points.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.2]{torsion_ex}
+\caption{An example of surface deformation due to torsion introduced by a complex arm path.}
+\end{center}
+\end{figure}
+
+In cases where the arm surface was put under high torsion by the curve path, this would cause a violent twist in the surface caused by the re-ordering of these control points as a result of the normal vector calculation. The result is a large shift in the v parameter upon rendering the surface. 
+
+Due to time constraints on the project, I decided to duplicate a single arm all the way around the model using a single path whose control points I rotated depending on which arm I was trying to create. This simplification allowed me to continue with the project and also ensured that the model would be able to stand alone after being printed.
+ 
 \subsection{Body}
 
 The construction of the body was a relatively simple process. As I had already established the origins of the arms, I decided that the Body would consist of a revolved NURBS surface about the z-axis. The curve shape and control points were largely arbitrary as I was mostly looking for something that would give a realistic look. There were certain constrictions, however, so the body could be part of a closed volume. 
@@ -63,11 +75,103 @@ The construction of the body was a relatively simple process. As I had already e
 \item The first control point must lie on the z-axis so that the body would be closed.
 \item Because the curve used was of degree 3, the next 3 control points were restricted to the same z-plane as the first point so that the top of the body would maintain an aesthetically pleasing $C1$ continuity.
 \item The final control point of the curve would restrict the body to meet the tops of the arms at a given radius and z value. (More on this later.)
-
+\end{itemize}
+\end{center}
 
 \subsection{Body Connections} 
 
-At this point in the construction,the body and arms are not connected. In order to form a closed volume, this problem must be rectified. To do so I developed a 
-\end{itemize}
+At this point in the construction,the body and arms are not connected. In order to form a closed volume, this problem must be rectified. To do so I developed a $C1$ continuous section I've referred to as the 'shoulder' which is used to attach the arms to the body and close the bottom of the model. 
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.2]{octo_no_body}
+\caption{Octopus before adding body connections and triangular patches.}
 \end{center}
+\end{figure}
+
+Each shoulder is started using the first two sets of control points of the arm it corresponds to. By creating vectors between the first and second sets of control points, inverting them and using the resulting vectors to create the next set of the shoulder connection, the shoulders are ensured $C1$ continuity with the arms. From there, the points on the bottom of the arm are equally stepped toward the origin over n intervals where n can be specified by the user. The upper points are also stepped in the direction of the origin, but also away from the center of the shoulder to create a more realistic joining of the arm and body. 
+
+In order to ensure a closed volume, the upper most (in the +z direction) point of the shoulder is dictated to intersect with the body's revolution. In this way, each shoulder meets at the origin below the body and meets with the body at the top. 
+
+\subsection{Closing the Model}
+
+After the addition of the shoulders, three-sided holes remained between each of the shoulder joints. The natural thing to do was to use the a triangular patch to close these holes and fully seal the volume. 
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.1]{arm_n_shoulder}
+\includegraphics[scale=0.1]{midsection}
+\caption{a) Arm to shoulder transition. b) Shoulder joints.}
+\end{center}
+\end{figure}
+
+The trick to this part was that it needed to occur after tessellation of the shoulders and body to ensure proximal triangle vertices along the seams of this patch. I will go into this more in the next section. 
+
+\section{Tessellation}
+
+The first step in this process was to establish a function which would write a triangle with the verices V1, V2 and V3. I created this function with a canonical ordering in mind so that the triangle normal is established by:
+
+\begin{center}
+$ tri\_normal = |(V2-V1) \times (V3-V1)|$
+\end{center} 
+
+After calculating this normal vector, the triangle is then written to the file handle provided to the function by the user. 
+
+\subsection{Quad Matrix to Triangles}
+
+This transformation function was fairly straight forward. Surfaces were created such that the rows represented the u parameter and columns the v parameter. Thus each value at i,j in the matrix represented a point on the surface. Matlab represents these as quads when using the surf function, but as we needed them as triangles a conversion was necessary. 
+
+The easiest way to go about this is to convert each quad into two triangles. This was done by visiting each \textit{interior node} of the matrix (i.e. $ i \neq  1 \; or \; num\_rows \; and \; j \neq 1 \; or \; num\_cols $). At each interior node the following two triangles vertices were established and created:
+
+Triangle 1:
+$v_1 = M_{i,j} \; v_2= M_{i+1,j} \; v_3 = M_{i,j+1} $
+Triangle 2:
+$v_1 = M_{i,j+1} \; v_2= M_{i+1,j} \; v_3 = M_{i+1,j+1} $
+
+Note: this function assumes that we are looking at the surface from the outside in for .stl format.
+
+This function was used on the surface matrices for the body, shoulders and head. 
+
+\subsection{Upper Triangular Matrix to Triangles}
+
+This function was used to translate the triangle patches to .stl format and behaves much in the same way as the function translating a full matrix of quads to triangles. The difference in this case is that only the upper half of the matrix defines the triangular patch. The fact that only interior nodes of the matrix are visited in terms of $i$ and $j$ remains true however.
+
+The indexing along the columns, $j$, is based on the current row index, $i$.  At each row only $j \in [2:num_cols-i]$ columns are visited to avoid going outside the bounds of the defined surface. For each matrix point visited two triangles are created:
+
+Triangle 1:
+$v_1 = M_{i,j} \; v_2= M_{i,j-1} \; v_3 = M_{i-1,j} $
+Triangle 2:
+$v_1 = M_{i,j} \; v_2= M_{i-1,j} \; v_3 = M_{i-1,j+1} $
+
+Just doing this is not enough however as it leaves out triangles needed to close the surface at the beginning of each row. Therefore a single triangle is created at the beginning of each row as well. It is defined by the vertices:
+
+Start of row triangle:
+$v_1 = M_{i,1} \; v_2= M_{i-1,1} \; v_3 = M_{i-1,2} $
+
+
+\subsection{Radial Interval Handling for Watertightness}
+
+Ensuring the proximal watertightness of the model became a matter of tracking the number of radial intervals used to create the body, shoulders, and arms.
+
+In the case of the shoulder to arm interface it was as simple as making sure the same number of intervals were used to create both as they were both based on the same v parameter, with the number of intervals along u having no effect. Where the shoulders and body met, however, became more of a challenge.
+
+For each triangular hole between shoulders, the number of vertices along each lower edge of the hole was equal to $\frac{1}{4}$ the number of intervals used to create the arms. This is because half of the shoulder is dedicated to meeting at the origin and the other quarter is dedicated to the other side of the arm (this upper portion being divided by its intersection with the body). This meant that each section of the body between intersections with shoulders needed to have as many intervals of evaluation, and as there are 8 legs to the Octopus the number of body intervals needed to be eight times this number. A more clear depiction follows:
+
+\begin{center}
+$body\_intervals = \frac{shoulder\_intervals}{4} * 8 $ 
+\end{center}
+
+
+It is in this way that I ensured each side of the triangular patch would have the same number of control points.
+
+\section{Final Model}
+
+After employing the above functions to write my .stl file, I loaded the file into MeshLab for viewing. At first some of the triangle normals were pointed in the wrong direction as indicated by the dark coloring used by MeshLab to indicate the interior of a surface. However, after flipping matrix points as needed, I was able to obtain a model which appeared fully sealed by proximity!
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.2]{octo}
+\caption{Final octopus model in MeshLab.}
+\end{center}
+\end{figure}
 \end{document}
