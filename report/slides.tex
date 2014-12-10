@@ -1,0 +1,175 @@
+\documentclass[14pt]{beamer}
+\mode<presentation>
+{
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetheme[white]{Wisconsin}
+\setbeamercovered{transparent}
+}
+
+\begin{document}
+
+\graphicspath{ {./figures/} }
+
+\title{Octopus Model}
+\author{Patrick C. Shriwise}
+\institute{University of Wisconsin - Madison}
+
+
+%--- Title Frame ------------%
+\maketitle
+
+
+%---- Slide 1 ---------------%
+\begin{frame}
+\frametitle{Concept}
+\begin{center}
+Origin of the idea for an octopus model:
+\vfill
+\includegraphics[scale=0.1]{Octopus_concept}
+\end{center}
+
+\end{frame}
+
+%---- Slide 2 ---------------%
+\begin{frame}
+\frametitle{Construction}
+
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+Concept for arms:
+\begin{itemize}
+\item bspline curve path to define arm
+\item arm's radial profile pre-defined
+\item sample path and generate cross-setions
+\end{itemize}
+\end{column}
+
+\hfill
+
+\begin{column}{0.48\textwidth}
+\begin{center}
+\includegraphics[scale=0.25]{radial_profile}
+\end{center}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+
+%---- Slide 3 ---------------%
+\begin{frame}
+\frametitle{Construction}
+
+\begin{center}
+\includegraphics[scale=0.2, trim = 175 0 0 0]{arm_ctrl_cage}
+\end{center}
+
+\end{frame}
+
+
+%---- Slide 4 ---------------%
+\begin{frame}
+\frametitle{Construction}
+
+\begin{center}
+\includegraphics[scale=0.4]{arm_n_shoulder}\\
+Body connection (shoulder) included in this image. 
+
+\end{center}
+
+\end{frame}
+
+%---- Slide 5 ---------------%
+\begin{frame}
+\frametitle{Problems}
+
+\begin{columns}
+%Column 1
+\begin{column}{0.48\textwidth}
+Issues with this method:
+\begin{itemize}
+\item surface torsion caused 'kinks' in the arm
+\item comes from calculation of normal vector for arm's control cage
+\end{itemize}
+\end{column}
+
+\hfill
+
+%Column 2
+\begin{column}{0.48\textwidth}
+
+\begin{center}
+\includegraphics[scale=0.2]{torsion_ex}
+\end{center}
+
+\end{column}
+
+
+\end{columns}
+
+\end{frame}
+
+%---- Slide 5 ---------------%
+\begin{frame}
+\frametitle{Simplification and Body}
+
+
+\begin{columns}
+%Column 1
+\begin{column}{0.48\textwidth}
+\begin{center}
+\includegraphics[scale=0.15]{octo_no_body}
+\end{center}
+\end{column}
+
+\hfill
+
+%Column 2
+\begin{column}{0.48\textwidth}
+
+\begin{center}
+\includegraphics[scale=0.25]{partial_body}
+\end{center}
+
+\end{column}
+
+
+\end{columns}
+
+\end{frame}
+
+%---- Slide 6 ---------------%
+\begin{frame}
+\frametitle{Closing the Model}
+
+
+\begin{center}
+\includegraphics[scale=0.1]{octo_no_armpits}
+\end{center}
+
+\vfill
+
+
+\begin{center}
+\includegraphics[scale=0.1, trim = 0 0 0 200]{shoulders_n_armpits}
+\end{center}
+
+
+\end{frame}
+
+%---- Slide 7 ---------------%
+\begin{frame}
+\frametitle{Final Model (MeshLab)}
+
+\begin{center}
+After fixing some surface senses...
+\includegraphics[scale=0.25]{octo}
+\end{center}
+
+\end{frame}
+
+\end{document}
+
+

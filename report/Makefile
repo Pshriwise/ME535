@@ -9,5 +9,5 @@ report: figures
 
 clean: 
 	rm -rf ./figures
-	rm -f *.pdf *.aux *.log *.gz
+	rm -f *.pdf *.aux *.log *.gz *.dvi *.nav *.snm *.out *.toc *~
 
