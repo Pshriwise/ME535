@@ -8,9 +8,10 @@ report: figures
 	pdflatex report.tex
 
 slides: figures
+	mv ./figures/*.pdf ./.
 	pdflatex slides.tex
 
 clean: 
 	rm -rf ./figures
-	rm -f slides.pdf report.pdf *.aux *.log *.gz *.dvi *.nav *.snm *.out *.toc *~
+	rm -f *.pdf *.aux *.log *.gz *.dvi *.nav *.snm *.out *.toc *~
 
