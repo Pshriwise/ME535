@@ -12,7 +12,7 @@
 
 \graphicspath{ {./figures/} }
 
-\title{Octopus Model}
+\title{Octopus(ish) Model}
 \author{Patrick C. Shriwise}
 \institute{University of Wisconsin - Madison}
 
@@ -40,8 +40,8 @@ Origin of the idea for an octopus model:
 \begin{column}{0.48\textwidth}
 Concept for arms:
 \begin{itemize}
-\item bspline curve path to define arm
-\item arm's radial profile pre-defined
+\item B-spline curve path to define arm
+\item pre-defined radial profile
 \item sample path and generate circular cross-setions
 \end{itemize}
 \end{column}
@@ -50,7 +50,7 @@ Concept for arms:
 
 \begin{column}{0.48\textwidth}
 \begin{center}
-\includegraphics[scale=0.25]{radial_profile}
+\includegraphics[scale=0.32, trim = 100 0 0 0]{radial_profile}
 \end{center}
 \end{column}
 \end{columns}
@@ -75,7 +75,7 @@ Concept for arms:
 
 \begin{center}
 \includegraphics[scale=0.4]{arm_n_shoulder}\\
-Body connection (shoulder) included in this image. 
+Body connection (shoulder included) 
 
 \end{center}
 
@@ -101,7 +101,7 @@ Issues with this method:
 \begin{column}{0.48\textwidth}
 
 \begin{center}
-\includegraphics[scale=0.2]{torsion_ex}
+\includegraphics[scale=0.25, clip = true, trim= 100 100 200 100]{torsion_ex}
 \end{center}
 
 \end{column}
@@ -130,7 +130,7 @@ Issues with this method:
 \begin{column}{0.48\textwidth}
 
 \begin{center}
-\includegraphics[scale=0.25]{partial_body}
+\includegraphics[scale=0.33, trim = 100 0 0 0 ]{partial_body}
 \end{center}
 
 \end{column}
@@ -146,7 +146,7 @@ Issues with this method:
 
 
 \begin{center}
-\includegraphics[scale=0.1]{octo_no_armpits}
+\includegraphics[scale=0.15]{octo_no_armpits}
 \end{center}
 
 \vfill
@@ -161,11 +161,12 @@ Issues with this method:
 
 %---- Slide 7 ---------------%
 \begin{frame}
-\frametitle{Final Model (MeshLab)}
+\frametitle{Final Model}
 
 \begin{center}
 After fixing some surface senses...
-\includegraphics[scale=0.25]{octo}
+\includegraphics[scale=0.25]{octo} \\
+(MeshLab rendering)
 \end{center}
 
 \end{frame}
