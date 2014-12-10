@@ -123,10 +123,14 @@ This transformation function was fairly straight forward. Surfaces were created 
 
 The easiest way to go about this is to convert each quad into two triangles. This was done by visiting each \textit{interior node} of the matrix (i.e. $ i \neq  1 \; or \; num\_rows \; and \; j \neq 1 \; or \; num\_cols $). At each interior node the following two triangles vertices were established and created:
 
+\vspace{2mm}
+\begin{flushleft}
 Triangle 1:
 $v_1 = M_{i,j} \; v_2= M_{i+1,j} \; v_3 = M_{i,j+1} $
 Triangle 2:
 $v_1 = M_{i,j+1} \; v_2= M_{i+1,j} \; v_3 = M_{i+1,j+1} $
+\end{flushleft}
+\vspace{2mm}
 
 Note: this function assumes that we are looking at the surface from the outside in for .stl format.
 
@@ -136,18 +140,25 @@ This function was used on the surface matrices for the body, shoulders and head.
 
 This function was used to translate the triangle patches to .stl format and behaves much in the same way as the function translating a full matrix of quads to triangles. The difference in this case is that only the upper half of the matrix defines the triangular patch. The fact that only interior nodes of the matrix are visited in terms of $i$ and $j$ remains true however.
 
-The indexing along the columns, $j$, is based on the current row index, $i$.  At each row only $j \in [2:num_cols-i]$ columns are visited to avoid going outside the bounds of the defined surface. For each matrix point visited two triangles are created:
+The indexing along the columns, $j$, is based on the current row index, $i$.  At each row only $j \in [2:num_cols-i]$ columns are visited to avoid going outside the bounds of the defined surface. For each matrix point visited two triangles are created: 
 
+\vspace{2mm}
+\begin{flushleft}
 Triangle 1:
 $v_1 = M_{i,j} \; v_2= M_{i,j-1} \; v_3 = M_{i-1,j} $
 Triangle 2:
 $v_1 = M_{i,j} \; v_2= M_{i-1,j} \; v_3 = M_{i-1,j+1} $
+\end{flushleft}
+\vspace{2mm}
 
 Just doing this is not enough however as it leaves out triangles needed to close the surface at the beginning of each row. Therefore a single triangle is created at the beginning of each row as well. It is defined by the vertices:
 
-Start of row triangle:
+\vspace{2mm}
+\begin{flushleft}
+Begin Row Triangle:
 $v_1 = M_{i,1} \; v_2= M_{i-1,1} \; v_3 = M_{i-1,2} $
-
+\end{flushleft}
+\vspace{2mm}
 
 \subsection{Radial Interval Handling for Watertightness}
 
@@ -168,7 +179,7 @@ It is in this way that I ensured each side of the triangular patch would have th
 
 After employing the above functions to write my .stl file, I loaded the file into MeshLab for viewing. At first some of the triangle normals were pointed in the wrong direction as indicated by the dark coloring used by MeshLab to indicate the interior of a surface. However, after flipping matrix points as needed, I was able to obtain a model which appeared fully sealed by proximity!
 
-\begin{figure}
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[scale=0.2]{octo}
 \caption{Final octopus model in MeshLab.}
