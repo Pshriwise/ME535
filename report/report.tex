@@ -14,7 +14,7 @@
 
 \section{Concept}
 
-I thought that modeling this animal would provide a challenging yet reasonable goal for this project. The arms in particular were an intriguing problem. In my mind I envisioned something like the image in figure 1. 
+I thought that modeling this animal would prove to be challenging yet reasonable given the time and scope of the project. The arms in particular were an intriguing problem. My aim was to produce something along the lines of the image in Figure 1. 
 
 \begin{figure}[h!]
 \begin{center}
@@ -26,35 +26,53 @@ I thought that modeling this animal would provide a challenging yet reasonable g
 
 \section{Construction}
 
-In the end, the model was constructed of 25 revolved NURBS surfaces and 7 linear triangular patches. I encountered many unforeseen obstacles along the way, most of which deepened my understanding of computational geometry even if it limited my ability to add complexity to the model. 
+In the end, the model was constructed of 25 revolved NURBS surfaces and 8 linear triangular patches. I encountered many unforeseen obstacles along the way, most of which deepened my understanding of computational geometry even if it limited my ability to add complexity to the model. 
 
 \subsection{Arms}
 
 The concept I had in mind for the arms was unfortunately only mildly successful. The idea was that using a radial profile described by a cubic bspline interpolation of 4 data points, I could construct an arm of the octopus which followed any path given to it, thus allowing me to create a model with complex arm shaping and the illusion of movement or interaction between arms as in the concept model. Making sure the arms would not overlap or intersect would then be left to inspection upon rendering the model. 
 
-I decided to approach this by first creating a radial profile which looked reasonably realistic. The next step was to supply a sample 3D bspline curve that one of the arms might follow. The path was then sampled at a set number of intervals (as might typically be done when plotting a curve). At each point on the curve path, the curve point along with the tangent unit vector was calculated using a De Boor method. I then wrote a function that would calculate a set of NURBS control points and weights for a circle given a center point, radius, and bi-normal vector. Each sample point would then calculate its control points using its point, the radius returned from the radial profile function (using the u value for the curve point to obtain the radius), and the tangent vector at that curve point. 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.3]{radial_profile}
+\caption{Radial profile applied to the arm surfaces.}
+\end{center}
+\end{figure}
 
-This then allowed for a setup in which I could supply a path for an arm using a bspline curve and get a control cage for this arm. This control cage could then easily be used to render the surface representing the arm using a Cox De Boor algorithm. (Note: when rendering these surfaces, the u-direction was treated with a degree of one as the u-values along the arm path had already been interpolated at the appropriate degree for the respective arm path).
+I decided to approach this by first creating a radial profile which looked reasonably realistic. The next step was to supply a sample 3D bspline curve that one of the arms might follow. The path was then sampled at a set number of intervals (as might typically be done when plotting a curve). At each point on the curve path, the curve point along with the tangent unit vector was calculated using a De Boor method. I then wrote a function that would calculate a set of NURBS control points and weights for a circle given a center point, radius, and bi-normal vector. At each sample point along the path curve I would then calculate its cross section control points using the curve value as the center, the radius returned from the radial profile function (using the u value for the curve point to obtain the radius), and the tangent vector at that curve point. 
 
-I then established the convention for this model that each arm-path would begin at equidistant points on a circle in the $z=0$ plane with tangent vectors parallel to that of the circle's curvature.
+This then allowed for a program in which I could supply a path for an arm using a B-spline curve and generate a control cage for the arm. The control cage could then easily be used to render the surface representing the arm using a Cox De Boor algorithm. (Note: when rendering these surfaces, the u-direction was treated with a degree of one as the u-values along the arm path had already been interpolated at the appropriate degree for the respective arm path).
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.1]{arm_ctrl_cage}
+\end{center}
+\end{figure}
+
+I then established the convention for this model that each arm-path would begin at equidistant points on a circle in the $z=0$ plane with tangent vectors parallel to that of the circle's normal vector (pointed away from the circle center).
 
 \subsubsection{Discretization Tolerance}
 
-Very quickly it was clear that uniform sampling of an arm path was not sufficient to create a smooth representation of the Octopus' arm. I then decided to implement a rudimentary tolerance program which, given information needed to construct the curve, would provide the next parameter value for use such that the chord between the previous point and the next point would not vary from the curve by more than a given tolerance. The formula used to determine the maximum distance from a chord (facet) and the curve was:
+Very quickly it was clear that uniform sampling of an arm path was not sufficient to create a smooth representation of the Octopus' arm. I then decided to implement a rudimentary tolerance function which, given information needed to construct the curve, would provide the next parameter value for use such that the chord between the previous point and the next point would not vary from the curve by more than a given tolerance.
 
-\begin{center}
-{err = $\frac{|(test\_pnt-previous\_pnt) \cdot chord|}{|chord \cdot chord|}$}
-\end{center}
-
-For each step, $du$, the range $u$ to $u+du$ was sampled for a new point which satisfied $err < tolerance$ over the entire range. If this error was larger than the allowed tolerance passed to the function, the parameter step size was reduced by the fraction:
+For an input $u$ value the step size, $du$, was initialized based on the input tolerance. The range $u$ to $u+du$ was sampled to ensure that the chord did not deviate from the curve by a distance greater than the allowed tolerance. If this error was larger than the allowed tolerance passed to the function, the parameter step size was reduced by the fraction:
 
 \begin{center}
 $ \frac{tolerance}{max\_err} $
 \end{center}
 
+The formula used to determine the distance from a chord (facet) and the curve at a given test point was a result of the projection of the vector from the current point to the test point:
+
+\begin{center}
+{$chord =  C(u+du)-C(u)$}\\
+{$err = \frac{|(test\_pnt-C(u)) \cdot chord|}{|chord \cdot chord|}$}
+\end{center}
+
+This process was then repeated until a satisfactory $du$ value was found, and the function would return $u+du$.
+
 \subsubsection{Arm Torsion}
 
-In order to generate the control cage of a given arm, and in order to do this, the control points of a circle are generated at each sample point along the arm path using a center, radius and bi-normal vector as described above. In order to begin creating these control points, a vector orthogonal to the circle's bi-normal vector must be found. The method used to do this was sensitive to changes in the seed bi-normal vector from point to point. This caused control points to be generated in different orders than expected by prior sets of control points.
+In order to generate the control cage of a given arm, the control points of a circle are generated at each sample point along the arm path using a center, radius and bi-normal vector as described above. In order to begin creating these control points, a vector orthogonal to the circle's bi-normal vector must be found. The method used to do this was sensitive to changes in the bi-normal vector provided to the function used to generate control point cross sections of the arm. Significant changes in multiple axes of the tangent vector from sample point to sample point caused control points to be generated in different orders than expected by prior sets of control points. The result was a large amount or torsion in the surface of the arm. 
 
 \begin{figure}[h!]
 \begin{center}
@@ -63,9 +81,9 @@ In order to generate the control cage of a given arm, and in order to do this, t
 \end{center}
 \end{figure}
 
-In cases where the arm surface was put under high torsion by the curve path, this would cause a violent twist in the surface caused by the re-ordering of these control points as a result of the normal vector calculation. The result is a large shift in the v parameter upon rendering the surface. 
+This would cause a violent twist or kink in the surface caused by the re-ordering of these control points as a result of the normal vector calculation. The result is a large shift in the v parameter upon rendering the surface. While these kinks were rare, it did significantly limit the types of paths I could use to define the arms.
 
-Due to time constraints on the project, I decided to duplicate a single arm all the way around the model using a single path whose control points I rotated depending on which arm I was trying to create. This simplification allowed me to continue with the project and also ensured that the model would be able to stand alone after being printed.
+Due to time constraints on the project, I decided to duplicate a single, kink-free arm all the way around the model using a single path whose control points I rotated depending on which arm I was trying to create. This simplification allowed me to continue with the project and also ensured that the model would be able to stand alone after being printed.
  
 \subsection{Body}
 
@@ -86,11 +104,11 @@ At this point in the construction,the body and arms are not connected. In order 
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale=0.2]{octo_no_body}
-\caption{Octopus before adding body connections and triangular patches.}
+\caption{Disjointed octopus.}
 \end{center}
 \end{figure}
 
-Each shoulder is started using the first two sets of control points of the arm it corresponds to. By creating vectors between the first and second sets of control points, inverting them and using the resulting vectors to create the next set of the shoulder connection, the shoulders are ensured $C1$ continuity with the arms. From there, the points on the bottom of the arm are equally stepped toward the origin over n intervals where n can be specified by the user. The upper points are also stepped in the direction of the origin, but also away from the center of the shoulder to create a more realistic joining of the arm and body. 
+Each shoulder is started using the first two spatially adjacent sets of control points of the arm it corresponds to. By creating vectors between the first and second sets of control points, inverting them and using the resulting vectors to create the next set of the shoulder connection, the shoulders are ensured $C1$ continuity with the arms. From there, the points on the bottom of the arm are equally stepped toward the origin over n intervals where n can be specified by the user. The upper points are also stepped in the direction of the origin, but also away from the center of the shoulder to create a more realistic joining of the arm and body. 
 
 In order to ensure a closed volume, the upper most (in the +z direction) point of the shoulder is dictated to intersect with the body's revolution. In this way, each shoulder meets at the origin below the body and meets with the body at the top. 
 
@@ -100,8 +118,8 @@ After the addition of the shoulders, three-sided holes remained between each of 
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[scale=0.2]{arm_n_shoulder}
-\includegraphics[scale=0.2]{midsection}
+\includegraphics[scale=0.35]{arm_n_shoulder}
+\includegraphics[scale=0.15, trim = 0 0 25 0]{octo_no_armpits}
 \caption{a) Arm to shoulder transition. b) Shoulder joints.}
 \end{center}
 \end{figure}
@@ -110,13 +128,29 @@ The trick to this part was that it needed to occur after tessellation of the sho
 
 \section{Tessellation}
 
+\subsection{Triangle to .stl format (ASCII)}
+
 The first step in this process was to establish a function which would write a triangle with the verices V1, V2 and V3. I created this function with a canonical ordering in mind so that the triangle normal is established by:
 
 \begin{center}
 $ tri\_normal = |(V2-V1) \times (V3-V1)|$
 \end{center} 
 
-After calculating this normal vector, the triangle is then written to the file handle provided to the function by the user. 
+After calculating this normal vector, the triangle is then written to the file handle provided to the function by the user in the following format: 
+
+
+\begin{flushleft}
+
+
+{facet normal $n_x \; n_y \; n_z$\\
+\hspace{5mm}	outer loop\\
+\hspace{10mm}		vertex $v1_x \; v1_y \; v1_z$\\
+\hspace{10mm}		vertex $v2_x \; v2_y \; v2_z$\\
+\hspace{10mm}		vertex $v3_x \; v3_y \; v3_z$\\
+\hspace{5mm} end loop\\
+end facet\\}
+\end{flushleft}
+
 
 \subsection{Quad Matrix to Triangles}
 
@@ -129,7 +163,9 @@ The easiest way to go about this is to convert each quad into two triangles. Thi
 Triangle 1:
 $v_1 = M_{i,j} \; v_2= M_{i+1,j} \; v_3 = M_{i,j+1} $
 Triangle 2:
-$v_1 = M_{i,j+1} \; v_2= M_{i+1,j} \; v_3 = M_{i+1,j+1} $
+$v_1 = M_{i,j+1} \; v_2= M_{i+1,j} \; v_3 = M_{i+1,j+1} $\\
+\hspace{18mm}$ i \in [2:num\_rows]$ \\
+\hspace{18mm}$ j \in [2:num\_cols]$
 \end{flushleft}
 \vspace{2mm}
 
@@ -148,7 +184,9 @@ The indexing along the columns, $j$, is based on the current row index, $i$.  At
 Triangle 1:
 $v_1 = M_{i,j} \; v_2= M_{i,j-1} \; v_3 = M_{i-1,j} $
 Triangle 2:
-$v_1 = M_{i,j} \; v_2= M_{i-1,j} \; v_3 = M_{i-1,j+1} $
+$v_1 = M_{i,j} \; v_2= M_{i-1,j} \; v_3 = M_{i-1,j+1} $\\
+\hspace{18mm}$ i \in [2:num\_rows]$ \\
+\hspace{18mm}$ j \in [2:num\_cols-i]$
 \end{flushleft}
 \vspace{2mm}
 
@@ -156,8 +194,9 @@ Just doing this is not enough however as it leaves out triangles needed to close
 
 \vspace{2mm}
 \begin{flushleft}
-Begin Row Triangle:
-$v_1 = M_{i,1} \; v_2= M_{i-1,1} \; v_3 = M_{i-1,2} $
+Start Row Triangle:\\
+\hspace{18mm}$v_1 = M_{i,1} \; v_2= M_{i-1,1} \; v_3 = M_{i-1,2} $ \\
+\hspace{18mm}$ i \in [2:num\_rows]$ \\
 \end{flushleft}
 \vspace{2mm}
 
@@ -165,7 +204,7 @@ $v_1 = M_{i,1} \; v_2= M_{i-1,1} \; v_3 = M_{i-1,2} $
 
 Ensuring the proximal watertightness of the model became a matter of tracking the number of radial intervals used to create the body, shoulders, and arms.
 
-In the case of the shoulder to arm interface it was as simple as making sure the same number of intervals were used to create both as they were both based on the same v parameter, with the number of intervals along u having no effect. Where the shoulders and body met, however, became more of a challenge.
+In the case of the shoulder to arm interface it was as simple as making sure the same number of intervals were used to create both as they were both based on the same v parameter, with the number of intervals along u having no effect. The space in which the body and shoulders met was more of a challenge, however.
 
 For each triangular hole between shoulders, the number of vertices along each lower edge of the hole was equal to $\frac{1}{4}$ the number of intervals used to create the arms. This is because half of the shoulder is dedicated to meeting at the origin and the other quarter is dedicated to the other side of the arm (this upper portion being divided by its intersection with the body). This meant that each section of the body between intersections with shoulders needed to have as many intervals of evaluation, and as there are 8 legs to the Octopus the number of body intervals needed to be eight times this number. A more clear depiction follows:
 
@@ -174,15 +213,22 @@ $body\_intervals = \frac{shoulder\_intervals}{4} * 8 $
 \end{center}
 
 
-It is in this way that I ensured each side of the triangular patch would have the same number of control points.
-
-\section{Final Model}
-
-After employing the above functions to write my .stl file, I loaded the file into MeshLab for viewing. At first some of the triangle normals were pointed in the wrong direction as indicated by the dark coloring used by MeshLab to indicate the interior of a surface. However, after flipping matrix points as needed, I was able to obtain a model which appeared fully sealed by proximity!
+It was in this way that I ensured each side of the triangular patch would have the same number of control points. Once these other surfaces were tesselated, a simple triangular patch was created using appropriate surface points around each arm and the portion of the body between shoulder joints. 
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[scale=0.2]{octo}
+\includegraphics[scale=0.18, clip=true, trim = 200 200 200 225]{shoulders_n_armpits}
+\caption{Underside view of the octopus.}
+\end{center}
+\end{figure}
+
+\section{Final Model}
+
+After employing the above functions to write my .stl file, I loaded the file into MeshLab for viewing. At first some of the triangle normals were pointed in the wrong direction as indicated by the dark coloring used by MeshLab to indicate the interior of a surface. However, after flipping matrix points as needed, I was able to obtain a fully sealed model. 
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale=0.3]{octo}
 \caption{Final octopus model in MeshLab.}
 \end{center}
 \end{figure}
